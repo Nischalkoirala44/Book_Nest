@@ -36,12 +36,17 @@ public class LoginServlet extends HttpServlet {
         try {
             User authenticatedUser = UserDAO.loginUser(loginAttempt);
             if (authenticatedUser != null) {
-                System.out.println("LoginServlet: Login successful for user: " + email); // Debugging
+                System.out.println("LoginServlet: Login successful for user: " + email + ", role: " + authenticatedUser.getRole()); // Debugging
                 // Store user in session
                 HttpSession session = request.getSession();
                 session.setAttribute("user", authenticatedUser);
-                // Redirect to index.jsp
-                String redirectUrl = request.getContextPath() + "/index.jsp";
+                // Redirect based on role
+                String redirectUrl;
+                if (authenticatedUser.getRole() == User.Role.admin) {
+                    redirectUrl = request.getContextPath() + "/view/adminPanel.jsp";
+                } else {
+                    redirectUrl = request.getContextPath() + "/index.jsp";
+                }
                 System.out.println("LoginServlet: Redirect URL: " + redirectUrl); // Debugging
                 response.sendRedirect(redirectUrl);
             } else {
