@@ -47,7 +47,7 @@
 <p style="color: red;"><%= request.getAttribute("error") %></p>
 <% } %>
 
-<form action="<%= request.getContextPath() %>/updateProfile" method="post" enctype="multipart/form-data">
+<form action="${pageContext.request.contextPath}/updateProfile" method="post" enctype="multipart/form-data">
     <div class="profile-image-container">
         <% if (user.getProfilePicture() != null) { %>
         <img src="<%= request.getContextPath() %>/getImage?userId=<%= user.getUserId() %>" alt="Profile Image" class="profile-image">

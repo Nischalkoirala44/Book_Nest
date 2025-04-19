@@ -16,6 +16,9 @@ public class UserDAO {
     private static final String SELECT_USER_BY_ID =
             "SELECT * FROM users WHERE id = ?";
 
+    private static final String UPDATE_USER =
+            "UPDATE users SET name=?, email=?, password=?,profile_picture=?, " + "bio=?, address=?, WHERE id=?";
+
     public static int registerUser(User user) {
         try (Connection connection = DBConnection.getDbConnection();
              PreparedStatement ps = connection.prepareStatement(INSERT_USER, Statement.RETURN_GENERATED_KEYS)) {
@@ -78,7 +81,8 @@ public class UserDAO {
 
     public static User getUserById(int id) {
         try (Connection connection = DBConnection.getDbConnection();
-             PreparedStatement ps = connection.prepareStatement(SELECT_USER_BY_ID)) {
+             PreparedStatement ps =
+                     connection.prepareStatement(SELECT_USER_BY_ID)) {
 
             ps.setInt(1, id);
             ResultSet rs = ps.executeQuery();
@@ -89,16 +93,58 @@ public class UserDAO {
                 userFromDB.setName(rs.getString("name"));
                 userFromDB.setEmail(rs.getString("email"));
                 userFromDB.setPassword(rs.getString("password"));
+
                 userFromDB.setRole(User.Role.valueOf(rs.getString("role")));
                 userFromDB.setProfilePicture(rs.getBytes("profile_picture"));
-                return userFromDB;
+
+                // Add these fields if they exist in your database
+                userFromDB.setBio(rs.getString("bio"));
+
+
+                userFromDB.setAddress(rs.getString("address"));
             }
 
         } catch (SQLException e) {
-            System.err.println("Error retrieving user by ID: " + e.getMessage());
-            throw new RuntimeException("Database error retrieving user", e);
+            System.err.println("Error retrieving user by ID: " +
+                    e.getMessage());
+            throw new RuntimeException("Database error retrieving user",
+                    e);
         }
 
         return null;
+    }
+
+    // Add the updateUser method
+    public static boolean updateUser(User user) {
+        try (Connection connection = DBConnection.getDbConnection();
+             PreparedStatement ps = connection.prepareStatement(UPDATE_USER)) {
+
+            // Set parameters with null checks
+            ps.setString(1, user.getName());
+            ps.setString(2, user.getEmail());
+            ps.setString(3, user.getPassword());
+
+            if (user.getProfilePicture() != null) {
+                ps.setBytes(4, user.getProfilePicture());
+            } else {
+                ps.setNull(4, Types.BLOB);
+            }
+
+            ps.setString(5, user.getBio());
+            ps.setString(7, user.getAddress());
+
+            ps.setInt(9, user.getUserId());
+
+            int rowsUpdated = ps.executeUpdate();
+            return rowsUpdated > 0;
+
+        } catch (SQLException e) {
+            System.err.println("Update error [SQLState:" + e.getSQLState()
+                    + "]");
+            throw new RuntimeException("Database update failed: " +
+                    e.getMessage(), e);
+        } catch (IllegalArgumentException e) {
+            throw new RuntimeException("Invalid date format. Use yyyy-mm-dd", e);
+        }
     }
 }

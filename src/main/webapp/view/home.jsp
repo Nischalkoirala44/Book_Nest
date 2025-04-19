@@ -315,6 +315,7 @@
     </style>
 </head>
 <body>
+
 <!-- Navigation Bar -->
 <nav class="navbar">
     <div class="nav-container">
@@ -332,7 +333,7 @@
 
         <div class="user-actions">
             <div class="user-profile" id="userProfileToggle">
-                <div class="user-avatar"><%= ((model.User) session.getAttribute("user")).getProfilePicture() %></div>
+                <div class="user-avatar"><%= ((model.User) session.getAttribute("user")).getName().charAt(0) %></div>
                 <div class="user-name"><%= ((model.User) session.getAttribute("user")).getName() %></div>
 
                 <div class="dropdown-menu" id="userDropdown">

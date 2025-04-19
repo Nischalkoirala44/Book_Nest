@@ -87,6 +87,6 @@ public class UpdateProfileServlet extends HttpServlet {
         request.getSession().setAttribute("user", user);
 
         // Redirect the user back to their profile page (display updated info)
-        response.sendRedirect(request.getContextPath() + "profile.jsp");
+        response.sendRedirect(request.getContextPath() + "/view/home.jsp");
     }
 }
