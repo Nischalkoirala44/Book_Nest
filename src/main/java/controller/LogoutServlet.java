@@ -21,7 +21,7 @@ public class LogoutServlet extends HttpServlet {
         }
 
         // Redirect to login page
-        String redirectUrl = request.getContextPath() + "/view/login.jsp";
+        String redirectUrl = request.getContextPath() + "/index.jsp";
         System.out.println("LogoutServlet: Redirect URL: " + redirectUrl); // Debugging
         response.sendRedirect(redirectUrl);
     }

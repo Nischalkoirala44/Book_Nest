@@ -45,7 +45,7 @@ public class LoginServlet extends HttpServlet {
                 if (authenticatedUser.getRole() == User.Role.admin) {
                     redirectUrl = request.getContextPath() + "/view/adminPanel.jsp";
                 } else {
-                    redirectUrl = request.getContextPath() + "/index.jsp";
+                    redirectUrl = request.getContextPath() + "/view/home.jsp";
                 }
                 System.out.println("LoginServlet: Redirect URL: " + redirectUrl); // Debugging
                 response.sendRedirect(redirectUrl);

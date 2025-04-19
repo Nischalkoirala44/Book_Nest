@@ -43,7 +43,7 @@
 </head>
 <body>
 <div class="container">
-    <h2>Welcome, Admin <%= ((model.User) session.getAttribute("user")).getName() %>!</h2>
+    <h2>Welcome, <%= ((model.User) session.getAttribute("user")).getName() %>!</h2>
     <p>This is the BookHive Admin Panel. Manage users, books, and more.</p>
     <p><a href="${pageContext.request.contextPath}/logout">Log out</a></p>
 </div>

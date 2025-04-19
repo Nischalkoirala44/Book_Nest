@@ -11,17 +11,19 @@ public class User implements Serializable {
     private String email;
     private String password;
     private Role role;
-    private byte[] image;
+    private byte[] profilePicture;
+    private String bio;
+    private String address;
 
     public User() {
     }
 
-    public User(String name, String email, String password, Role role, byte[] image) {
+    public User(String name, String email, String password, Role role, byte[] profilePicture) {
         this.name = name;
         this.email = email;
         this.password = password;
         this.role = role;
-        this.image = image;
+        this.profilePicture = profilePicture;
     }
 
     public int getUserId() {
@@ -64,11 +66,23 @@ public class User implements Serializable {
         this.role = role;
     }
 
-    public byte[] getImage() {
-        return image;
+    public byte[] getProfilePicture() {
+        return profilePicture;
     }
 
-    public void setImage(byte[] image) {
-        this.image = image;
+    public void setProfilePicture(byte[] profilePicture) {
+        this.profilePicture = profilePicture;
+    }
+    public String getBio() {
+        return bio;
+    }
+    public void setBio(String bio) {
+        this.bio = bio;
+    }
+    public String getAddress() {
+        return address;
+    }
+    public void setAddress(String address) {
+        this.address = address;
     }
 }

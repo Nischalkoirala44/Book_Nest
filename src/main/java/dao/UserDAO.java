@@ -24,7 +24,7 @@ public class UserDAO {
             ps.setString(2, user.getEmail());
             ps.setString(3, user.getPassword()); // In production, hash this
             ps.setString(4, user.getRole().name());
-            ps.setBytes(5, user.getImage());
+            ps.setBytes(5, user.getProfilePicture());
 
             int rows = ps.executeUpdate();
             System.out.println("Rows affected: " + rows); // Debugging
@@ -64,7 +64,7 @@ public class UserDAO {
                 userFromDB.setEmail(rs.getString("email"));
                 userFromDB.setPassword(rs.getString("password"));
                 userFromDB.setRole(User.Role.valueOf(rs.getString("role")));
-                userFromDB.setImage(rs.getBytes("profile_picture"));
+                userFromDB.setProfilePicture(rs.getBytes("profile_picture"));
                 return userFromDB;
             }
 
@@ -90,7 +90,7 @@ public class UserDAO {
                 userFromDB.setEmail(rs.getString("email"));
                 userFromDB.setPassword(rs.getString("password"));
                 userFromDB.setRole(User.Role.valueOf(rs.getString("role")));
-                userFromDB.setImage(rs.getBytes("profile_picture"));
+                userFromDB.setProfilePicture(rs.getBytes("profile_picture"));
                 return userFromDB;
             }
 

@@ -44,7 +44,7 @@
     <input type="email" name="email" placeholder="Email" required />
     <input type="password" name="password" placeholder="Password" required />
     <select name="role">
-        <option value="user">User</option>
+        <option value="user">Student</option>
         <option value="admin">Admin</option>
     </select>
     <input type="file" name="profilePicture" accept="image/*" />
