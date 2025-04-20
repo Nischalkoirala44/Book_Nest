@@ -728,13 +728,15 @@
         <div class="user-actions">
             <div class="user-profile" id="userProfileToggle">
                 <% model.User user = (model.User) session.getAttribute("user"); %>
-                <% if (user != null) { %>
-                <div class="user-avatar"><%= user.getName().charAt(0) %></div>
+                <div class="user-avatar">
+                    <%= user.getProfilePicture() != null
+                            ? "<img src='profile-image?id=" + user.getUserId() + "' alt='Profile Image' />"
+                            : user.getName().charAt(0)
+                    %>
+                </div>
+
                 <div class="user-name"><%= user.getName() %></div>
-                <% } else { %>
-                <div class="user-avatar">?</div>
-                <div class="user-name">Guest</div>
-                <% } %>
+
                 <div class="dropdown-menu" id="userDropdown">
                     <ul>
                         <li><a href="#" id="viewProfileBtn">View Profile</a></li>
@@ -1083,7 +1085,7 @@
         <div class="modal-body">
             <div class="profile-details">
                 <% if (user != null) { %>
-                <div class="profile-avatar"><%= user.getName().charAt(0) %></div>
+                <div class="profile-avatar"><%= user.getProfilePicture() %></div>
                 <div class="profile-info">
                     <div class="profile-info-item">
                         <div class="profile-info-label">Name</div>

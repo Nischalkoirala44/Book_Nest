@@ -53,7 +53,7 @@ public class RegisterServlet extends HttpServlet {
             }
             try (InputStream inputStream = filePart.getInputStream()) {
                 profilePicture = inputStream.readAllBytes();
-                System.out.println("Image size: " + (profilePicture != null ? profilePicture.length : 0) + " bytes"); // Debugging
+                System.out.println("Image size: " + profilePicture.length + " bytes"); // Debugging
             }
         }
 
