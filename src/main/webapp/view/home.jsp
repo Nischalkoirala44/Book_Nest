@@ -720,10 +720,8 @@
         </div>
         <ul class="nav-links">
             <li><a href="#" class="active">Home</a></li>
-            <li><a href="#">Browse</a></li>
-            <li><a href="#">My Books</a></li>
-            <li><a href="#">About</a></li>
-            <li><a href="#">Contact</a></li>
+            <li><a href="browse.jsp">Browse</a></li>
+            <li><a href="my-Books.jsp">My Books</a></li>
         </ul>
         <div class="user-actions">
             <div class="user-profile" id="userProfileToggle">
@@ -740,7 +738,7 @@
                 <div class="dropdown-menu" id="userDropdown">
                     <ul>
                         <li><a href="#" id="viewProfileBtn">View Profile</a></li>
-                        <li><a href="#">My Books</a></li>
+                        <li><a href="my-Books.jsp">My Books</a></li>
                         <li class="logout"><a href="${pageContext.request.contextPath}/logout">Logout</a></li>
                     </ul>
                 </div>
@@ -748,6 +746,7 @@
         </div>
     </div>
 </nav>
+
 
 <!-- Hero Section -->
 <section class="hero">

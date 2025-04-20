@@ -463,18 +463,13 @@
             <a href="index.jsp" class="logo">Book<span>Nest</span></a>
             <ul class="nav-links">
                 <li><a href="#">Home</a></li>
-                <li><a href="books.jsp">Books</a></li>
-                <% if (session.getAttribute("user") != null) { %>
-                <li><a href="mybooks.jsp">My Books</a></li>
-                <li><a href="profile.jsp">Profile</a></li>
-                <% } %>
+                <li><a href="#">Books</a></li>
+                <li><a href="#">About</a></li>
+                <li><a href="#">Contact</a></li>
             </ul>
             <div class="auth-buttons">
-                <% if (session.getAttribute("user") == null) { %>
                 <a href="view/login.jsp" class="login-btn">Login</a>
                 <a href="view/register.jsp" class="register-btn">Register</a>
-                <% } else { %>
-                <% } %>
             </div>
         </nav>
     </div>
