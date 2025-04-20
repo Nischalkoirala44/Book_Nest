@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BookHive Admin Dashboard</title>
+    <title>Issued Books - BookHive</title>
     <style>
         * {
             box-sizing: border-box;
@@ -15,7 +15,7 @@
         body {
             display: flex;
             height: 100vh;
-            background: linear-gradient(to right, #f9f9f9, #e6f0ff);
+            background: linear-gradient(to right, #eef2f3, #e6f0ff);
         }
 
         .sidebar {
@@ -50,43 +50,13 @@
             flex: 1;
             padding: 30px;
             background-color: #f2f6ff;
+            overflow-y: auto;
         }
 
-        .main h1 {
-            margin-bottom: 20px;
+        h1 {
+            text-align: center;
             color: #333;
-        }
-
-        .cards {
-            display: flex;
-            gap: 20px;
             margin-bottom: 30px;
-            flex-wrap: wrap;
-        }
-
-        .card {
-            flex: 1;
-            min-width: 220px;
-            background: linear-gradient(to top right, #ff6a00, #ee0979);
-            color: white;
-            padding: 20px;
-            border-radius: 12px;
-            transition: transform 0.3s, box-shadow 0.3s;
-        }
-
-        .card:hover {
-            transform: scale(1.03);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.15);
-        }
-
-        .card h3 {
-            margin-bottom: 10px;
-            font-size: 1.2em;
-        }
-
-        .card p {
-            font-size: 1.5em;
-            font-weight: bold;
         }
 
         table {
@@ -95,13 +65,13 @@
             background-color: white;
             border-radius: 12px;
             overflow: hidden;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
         }
 
         th, td {
-            padding: 14px 20px;
+            padding: 14px 18px;
             text-align: left;
-            border-bottom: 1px solid #eaeaea;
+            border-bottom: 1px solid #f0f0f0;
         }
 
         th {
@@ -110,7 +80,17 @@
         }
 
         tr:hover {
-            background-color: #f0f4ff;
+            background-color: #f7f9ff;
+        }
+
+        .status-returned {
+            color: green;
+            font-weight: bold;
+        }
+
+        .status-pending {
+            color: red;
+            font-weight: bold;
         }
     </style>
 </head>
@@ -125,48 +105,40 @@
 </div>
 
 <div class="main">
-    <h1>Admin Dashboard</h1>
+    <h1>📖 Issued Books</h1>
 
-    <div class="cards">
-        <div class="card">
-            <h3>Total Books</h3>
-            <p>850</p>
-        </div>
-        <div class="card" style="background: linear-gradient(to top right, #00c6ff, #0072ff);">
-            <h3>Total Users</h3>
-            <p>342</p>
-        </div>
-        <div class="card" style="background: linear-gradient(to top right, #36d1dc, #5b86e5);">
-            <h3>Books Issued</h3>
-            <p>120</p>
-        </div>
-    </div>
-
-    <h2>Recently Added Books</h2>
     <table>
         <tr>
-            <th>Title</th>
-            <th>Author</th>
-            <th>Category</th>
-            <th>Date Added</th>
+            <th>User Name</th>
+            <th>Book Title</th>
+            <th>Issued Date</th>
+            <th>Issued Time</th>
+            <th>Deadline</th>
+            <th>Status</th>
         </tr>
         <tr>
-            <td>Learn JavaScript</td>
-            <td>Mark Twain</td>
-            <td>Programming</td>
-            <td>April 15, 2025</td>
-        </tr>
-        <tr>
-            <td>Mastering CSS</td>
-            <td>Jane Doe</td>
-            <td>Web Design</td>
-            <td>April 12, 2025</td>
-        </tr>
-        <tr>
-            <td>Database Systems</td>
-            <td>John Smith</td>
-            <td>Technology</td>
+            <td>Ram Bahadur</td>
+            <td>Java Programming</td>
             <td>April 10, 2025</td>
+            <td>10:30 AM</td>
+            <td>April 25, 2025</td>
+            <td class="status-pending">Not Returned</td>
+        </tr>
+        <tr>
+            <td>Sita Kumari</td>
+            <td>Data Structures</td>
+            <td>April 5, 2025</td>
+            <td>2:00 PM</td>
+            <td>April 20, 2025</td>
+            <td class="status-returned">Returned</td>
+        </tr>
+        <tr>
+            <td>Hari Shrestha</td>
+            <td>Web Development Basics</td>
+            <td>April 12, 2025</td>
+            <td>9:45 AM</td>
+            <td>April 27, 2025</td>
+            <td class="status-pending">Not Returned</td>
         </tr>
     </table>
 </div>

@@ -730,7 +730,7 @@
                 <% model.User user = (model.User) session.getAttribute("user"); %>
                 <div class="user-avatar">
                     <%= user.getProfilePicture() != null
-                            ? "<img src='profile-image?id=" + user.getUserId() + "' alt='Profile Image' />"
+                            ? "<img src='profilePicture?userId=" + user.getUserId() + "' alt='Profile Image' />"
                             : user.getName().charAt(0)
                     %>
                 </div>
