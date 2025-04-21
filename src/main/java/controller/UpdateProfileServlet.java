@@ -9,6 +9,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.Part;
 import model.User;
 import util.DBConnection;
+import dao.UserDAO;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -16,7 +17,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
-@WebServlet("/updateProfile")
+@WebServlet("/updateUser")
 @MultipartConfig(fileSizeThreshold = 1024 * 1024, // 1MB
         maxFileSize = 1024 * 1024 * 5,  // 5MB
         maxRequestSize = 1024 * 1024 * 10) // 10MB
@@ -58,7 +59,7 @@ public class UpdateProfileServlet extends HttpServlet {
 
         // Update the user data in the database
         try (Connection conn = DBConnection.getDbConnection()) {
-            String sql = "UPDATE users SET name = ?, email = ?, bio = ?, address = ?, profile_picture = ? WHERE id = ?";
+            String sql = "UPDATE users SET name = ?, email = ?, bio = ?, address = ?, profile_picture = ? WHERE userId = ?";
             try (PreparedStatement stmt = conn.prepareStatement(sql)) {
                 stmt.setString(1, name);
                 stmt.setString(2, email);

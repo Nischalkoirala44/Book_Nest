@@ -14,10 +14,10 @@ public class UserDAO {
             "SELECT * FROM users WHERE email = ? AND password = ?";
 
     private static final String SELECT_USER_BY_ID =
-            "SELECT * FROM users WHERE id = ?";
+            "SELECT * FROM users WHERE userId = ?";
 
     private static final String UPDATE_USER =
-            "UPDATE users SET name=?, email=?, password=?,profile_picture=?, " + "bio=?, address=?, WHERE id=?";
+            "UPDATE users SET name=?, email=?, password=?,profile_picture=?, bio=?, address=?, WHERE userId=?";
 
     public static int registerUser(User user) {
         try (Connection connection = DBConnection.getDbConnection();
@@ -50,67 +50,61 @@ public class UserDAO {
         System.err.println("No rows affected or no keys generated");
         return -1;
     }
+    public static User loginUser(User loginAttempt) {
+        // Update SQL to include profile_picture
+        String sql = "SELECT userId, name, email, password, role, profile_picture, bio, address " +
+                "FROM users WHERE email = ?";
 
-    public static User loginUser(User user) {
-        try (Connection connection = DBConnection.getDbConnection();
-             PreparedStatement ps = connection.prepareStatement(SELECT_USER_BY_EMAIL_PASSWORD)) {
+        try (Connection conn = DBConnection.getDbConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
 
-            ps.setString(1, user.getEmail());
-            ps.setString(2, user.getPassword());
-
-            ResultSet rs = ps.executeQuery();
+            stmt.setString(1, loginAttempt.getEmail());
+            ResultSet rs = stmt.executeQuery();
 
             if (rs.next()) {
-                User userFromDB = new User();
-                userFromDB.setUserId(rs.getInt("id"));
-                userFromDB.setName(rs.getString("name"));
-                userFromDB.setEmail(rs.getString("email"));
-                userFromDB.setPassword(rs.getString("password"));
-                userFromDB.setRole(User.Role.valueOf(rs.getString("role")));
-                userFromDB.setProfilePicture(rs.getBytes("profile_picture"));
-                return userFromDB;
-            }
+                User user = new User();
+                user.setUserId(rs.getInt("userId"));
+                user.setName(rs.getString("name"));
+                user.setEmail(rs.getString("email"));
+                user.setPassword(rs.getString("password"));
+                user.setRole(User.Role.valueOf(rs.getString("role")));
+                user.setProfilePicture(rs.getBytes("profile_picture")); // Crucial line
+                user.setBio(rs.getString("bio"));
+                user.setAddress(rs.getString("address"));
 
+                // Verify password (add password hashing in production)
+                if (loginAttempt.getPassword().equals(user.getPassword())) {
+                    return user;
+                }
+            }
         } catch (SQLException e) {
-            System.err.println("Error authenticating user: " + e.getMessage());
             throw new RuntimeException("Database error during login", e);
         }
-
         return null;
     }
 
-    public static User getUserById(int id) {
-        try (Connection connection = DBConnection.getDbConnection();
-             PreparedStatement ps =
-                     connection.prepareStatement(SELECT_USER_BY_ID)) {
-
-            ps.setInt(1, id);
-            ResultSet rs = ps.executeQuery();
-
+    public static User getUserById(int userId) {
+        // Example SQL - adjust according to your schema
+        String sql = "SELECT userId, name, email, password, role, profile_picture, bio, address FROM users WHERE userId = ?";
+        try (Connection conn = DBConnection.getDbConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, userId);
+            ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
-                User userFromDB = new User();
-                userFromDB.setUserId(rs.getInt("id"));
-                userFromDB.setName(rs.getString("name"));
-                userFromDB.setEmail(rs.getString("email"));
-                userFromDB.setPassword(rs.getString("password"));
-
-                userFromDB.setRole(User.Role.valueOf(rs.getString("role")));
-                userFromDB.setProfilePicture(rs.getBytes("profile_picture"));
-
-                // Add these fields if they exist in your database
-                userFromDB.setBio(rs.getString("bio"));
-
-
-                userFromDB.setAddress(rs.getString("address"));
+                User user = new User();
+                user.setUserId(rs.getInt("userId"));
+                user.setName(rs.getString("name"));
+                user.setEmail(rs.getString("email"));
+                user.setPassword(rs.getString("password"));
+                user.setRole(User.Role.valueOf(rs.getString("role")));
+                user.setProfilePicture(rs.getBytes("profile_picture")); // THIS IS CRUCIAL
+                user.setBio(rs.getString("bio"));
+                user.setAddress(rs.getString("address"));
+                return user;
             }
-
         } catch (SQLException e) {
-            System.err.println("Error retrieving user by ID: " +
-                    e.getMessage());
-            throw new RuntimeException("Database error retrieving user",
-                    e);
+            e.printStackTrace();
         }
-
         return null;
     }
 

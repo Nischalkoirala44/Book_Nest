@@ -203,10 +203,10 @@
             <div class="success-message"><%= request.getAttribute("success") %></div>
             <% } %>
 
-            <form action="${pageContext.request.contextPath}/updateProfile" method="post" enctype="multipart/form-data" id="editProfileForm">
+            <form action="${pageContext.request.contextPath}/updateUser" method="post" enctype="multipart/form-data" id="editProfileForm">
                 <div class="profile-image-container">
                     <% if (user.getProfilePicture() != null) { %>
-                    <img src="<%= request.getContextPath() %>/getImage?userId=<%= user.getUserId() %>&t=<%= cacheBuster %>" alt="Profile Image" class="profile-image" id="profileImage">
+                    <img src="<%= request.getContextPath() %>/getProfilePicture?userId=<%= user.getUserId() %>&t=<%= cacheBuster %>" alt="Profile Image" class="profile-image" id="profileImage">
                     <% } else { %>
                     <div class="profile-image-fallback" id="profileImageFallback">
                         <%= user.getName() != null && !user.getName().isEmpty() ? user.getName().charAt(0) : "?" %>

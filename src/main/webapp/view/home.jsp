@@ -328,12 +328,38 @@
             border-radius: 8px;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
             cursor: pointer;
-            transition: background-color 0.3s;
+            transition: background-color 0.3s, transform 0.3s;
+            font-weight: 500;
+            text-align: center;
         }
 
         .category-item:hover {
             background-color: var(--primary-color);
             color: white;
+            transform: translateY(-2px);
+        }
+
+        .category-item.active {
+            background-color: var(--primary-color);
+            color: white;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        @media (max-width: 768px) {
+            .category-list {
+                justify-content: center;
+            }
+
+            .category-item {
+                flex: 1 1 40%; /* Adjust for smaller screens */
+                min-width: 120px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .category-item {
+                flex: 1 1 100%; /* Stack on very small screens */
+            }
         }
 
         /* My Books Section */
@@ -657,7 +683,8 @@
         .book-details-cover img {
             width: 100%;
             height: 100%;
-            object-fit: cover;
+        =\
+        object-fit: cover;
         }
 
         .book-details-info {
@@ -727,14 +754,13 @@
             <div class="user-profile" id="userProfileToggle">
                 <% model.User user = (model.User) session.getAttribute("user"); %>
                 <div class="user-avatar">
-                    <%= user.getProfilePicture() != null
-                            ? "<img src='profilePicture?userId=" + user.getUserId() + "' alt='Profile Image' />"
-                            : user.getName().charAt(0)
-                    %>
+                    <% if (user.getProfilePicture() != null && user.getProfilePicture().length > 0) { %>
+                    <img src='profilePicture?userId=<%= user.getUserId() %>' alt='Profile Image' />
+                    <% } else { %>
+                    <%= user.getName().charAt(0) %>
+                    <% } %>
                 </div>
-
                 <div class="user-name"><%= user.getName() %></div>
-
                 <div class="dropdown-menu" id="userDropdown">
                     <ul>
                         <li><a href="#" id="viewProfileBtn">View Profile</a></li>
@@ -746,7 +772,6 @@
         </div>
     </div>
 </nav>
-
 
 <!-- Hero Section -->
 <section class="hero">
@@ -845,14 +870,15 @@
     <section class="categories">
         <h2 class="section-title">Browse by Category</h2>
         <div class="category-list">
-            <div class="category-item">Fiction</div>
-            <div class="category-item">Non-Fiction</div>
-            <div class="category-item">Science</div>
-            <div class="category-item">History</div>
-            <div class="category-item">Biography</div>
-            <div class="category-item">Technology</div>
-            <div class="category-item">Business</div>
-            <div class="category-item">Self-Help</div>
+            <%
+                // Simulated category list (replace with actual data from backend)
+                String[] categories = {"Fiction", "Non-Fiction", "Science", "History", "Biography", "Technology", "Business", "Self-Help", "Fantasy", "Mystery"};
+                for (String category : categories) {
+            %>
+            <div class="category-item" data-category="<%= category.toLowerCase() %>">
+                <%= category %>
+            </div>
+            <% } %>
         </div>
     </section>
     <!-- My Books Section -->
@@ -1083,8 +1109,10 @@
         </div>
         <div class="modal-body">
             <div class="profile-details">
-                <% if (user != null) { %>
-                <div class="profile-avatar"><%= user.getProfilePicture() %></div>
+                <div class="profile-avatar">
+                    <% if (user.getProfilePicture() == null) { %>
+                    <%= user.getName().substring(0, 1).toUpperCase() %>
+                </div>
                 <div class="profile-info">
                     <div class="profile-info-item">
                         <div class="profile-info-label">Name</div>
@@ -1232,6 +1260,26 @@
                 this.classList.remove('active');
                 // console.log('Modal closed via outside click'); // Debug log
             }
+        });
+    });
+
+    // Category Selection
+    const categoryItems = document.querySelectorAll('.category-item');
+    categoryItems.forEach(item => {
+        item.addEventListener('click', function() {
+            // Remove active class from all category items
+            categoryItems.forEach(i => i.classList.remove('active'));
+            // Add active class to the clicked item
+            this.classList.add('active');
+
+            // Get the category name
+            const category = this.getAttribute('data-category');
+
+            // Navigate to browse page with category filter
+            window.location.href = `browse.jsp?category=${encodeURIComponent(category)}`;
+
+            // Optional: Log for debugging
+            console.log(`Selected category: ${category}`);
         });
     });
 </script>
