@@ -82,14 +82,17 @@
         tr:hover {
             background-color: #f7f9ff;
         }
+        .sidebar .active {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
     </style>
 </head>
 <body>
 <div class="sidebar">
-    <h2>📚 BookHive</h2>
+    <h2>📚 BookNest</h2>
     <a href="${pageContext.request.contextPath}/view/adminPanel.jsp">Dashboard</a>
     <a href="${pageContext.request.contextPath}/view/books.jsp">Books</a>
-    <a href="${pageContext.request.contextPath}/view/users.jsp">Users</a>
+    <a href="${pageContext.request.contextPath}/view/users.jsp" class="active">Users</a>
     <a href="${pageContext.request.contextPath}/view/issued.jsp">Issued</a>
     <a href="${pageContext.request.contextPath}/view/register.jsp">Logout</a>
 </div>

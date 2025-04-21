@@ -804,7 +804,7 @@
 <nav class="navbar">
     <div class="nav-container">
         <div class="logo">
-            <h1><span>Book</span> Hive</h1>
+            <h1><span>Book</span> Nest</h1>
         </div>
         <ul class="nav-links">
             <li><a href="#" class="active">Home</a></li>
