@@ -2,22 +2,21 @@ package dao;
 
 import model.User;
 import util.DBConnection;
+import util.PasswordUtil;
+import util.EncryptionUtil;
 
 import java.sql.*;
 
 public class UserDAO {
 
     private static final String INSERT_USER =
-            "INSERT INTO users(name, email, password, role, profile_picture) VALUES(?, ?, ?, ?, ?)";
-
-    private static final String SELECT_USER_BY_EMAIL_PASSWORD =
-            "SELECT * FROM users WHERE email = ? AND password = ?";
-
+            "INSERT INTO users(name, email, password, role, profile_picture, bio, address) VALUES(?, ?, ?, ?, ?, ?, ?)";
+    private static final String SELECT_USER_BY_EMAIL =
+            "SELECT userId, name, email, password, role, profile_picture, bio, address FROM users WHERE email = ?";
     private static final String SELECT_USER_BY_ID =
-            "SELECT * FROM users WHERE userId = ?";
-
+            "SELECT userId, name, email, password, role, profile_picture, bio, address FROM users WHERE userId = ?";
     private static final String UPDATE_USER =
-            "UPDATE users SET name=?, email=?, password=?,profile_picture=?, bio=?, address=?, WHERE userId=?";
+            "UPDATE users SET name=?, email=?, password=?, profile_picture=?, bio=?, address=? WHERE userId=?";
 
     public static int registerUser(User user) {
         try (Connection connection = DBConnection.getDbConnection();
@@ -25,38 +24,32 @@ public class UserDAO {
 
             ps.setString(1, user.getName());
             ps.setString(2, user.getEmail());
-            ps.setString(3, user.getPassword()); // In production, hash this
+            String hashedPassword = PasswordUtil.hashPassword(user.getPassword());
+            ps.setString(3, hashedPassword);
             ps.setString(4, user.getRole().name());
             ps.setBytes(5, user.getProfilePicture());
+            // Encrypt bio and address
+            ps.setString(6, EncryptionUtil.encrypt(user.getBio()));
+            ps.setString(7, EncryptionUtil.encrypt(user.getAddress()));
 
             int rows = ps.executeUpdate();
-            System.out.println("Rows affected: " + rows); // Debugging
-
             if (rows > 0) {
                 ResultSet generatedKeys = ps.getGeneratedKeys();
                 if (generatedKeys.next()) {
-                    int userId = generatedKeys.getInt(1);
-                    System.out.println("Registered user ID: " + userId); // Debugging
-                    return userId;
+                    return generatedKeys.getInt(1);
                 }
             }
-
         } catch (SQLException e) {
-            System.err.println("Error registering user: " + e.getMessage());
-            e.printStackTrace(); // Detailed stack trace for debugging
             throw new RuntimeException("Database error during registration", e);
+        } catch (Exception e) {
+            throw new RuntimeException("Encryption error", e);
         }
-
-        System.err.println("No rows affected or no keys generated");
         return -1;
     }
-    public static User loginUser(User loginAttempt) {
-        // Update SQL to include profile_picture
-        String sql = "SELECT userId, name, email, password, role, profile_picture, bio, address " +
-                "FROM users WHERE email = ?";
 
+    public static User loginUser(User loginAttempt) {
         try (Connection conn = DBConnection.getDbConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+             PreparedStatement stmt = conn.prepareStatement(SELECT_USER_BY_EMAIL)) {
 
             stmt.setString(1, loginAttempt.getEmail());
             ResultSet rs = stmt.executeQuery();
@@ -68,26 +61,26 @@ public class UserDAO {
                 user.setEmail(rs.getString("email"));
                 user.setPassword(rs.getString("password"));
                 user.setRole(User.Role.valueOf(rs.getString("role")));
-                user.setProfilePicture(rs.getBytes("profile_picture")); // Crucial line
-                user.setBio(rs.getString("bio"));
-                user.setAddress(rs.getString("address"));
+                user.setProfilePicture(rs.getBytes("profile_picture"));
+                // Decrypt bio and address
+                user.setBio(EncryptionUtil.decrypt(rs.getString("bio")));
+                user.setAddress(EncryptionUtil.decrypt(rs.getString("address")));
 
-                // Verify password (add password hashing in production)
-                if (loginAttempt.getPassword().equals(user.getPassword())) {
+                if (PasswordUtil.verifyPassword(loginAttempt.getPassword(), user.getPassword())) {
                     return user;
                 }
             }
         } catch (SQLException e) {
             throw new RuntimeException("Database error during login", e);
+        } catch (Exception e) {
+            throw new RuntimeException("Decryption error", e);
         }
         return null;
     }
 
     public static User getUserById(int userId) {
-        // Example SQL - adjust according to your schema
-        String sql = "SELECT userId, name, email, password, role, profile_picture, bio, address FROM users WHERE userId = ?";
         try (Connection conn = DBConnection.getDbConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+             PreparedStatement stmt = conn.prepareStatement(SELECT_USER_BY_ID)) {
             stmt.setInt(1, userId);
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
@@ -97,48 +90,79 @@ public class UserDAO {
                 user.setEmail(rs.getString("email"));
                 user.setPassword(rs.getString("password"));
                 user.setRole(User.Role.valueOf(rs.getString("role")));
-                user.setProfilePicture(rs.getBytes("profile_picture")); // THIS IS CRUCIAL
+                user.setProfilePicture(rs.getBytes("profile_picture"));
                 user.setBio(rs.getString("bio"));
                 user.setAddress(rs.getString("address"));
                 return user;
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new RuntimeException("Database error fetching user", e);
         }
         return null;
     }
 
-    // Add the updateUser method
+    public static void storeRememberMeToken(int userId, String token) {
+        String sql = "INSERT INTO remember_me_tokens(userId, token, expiry) VALUES(?, ?, ?)";
+        try (Connection conn = DBConnection.getDbConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, userId);
+            stmt.setString(2, token);
+            stmt.setTimestamp(3, new Timestamp(System.currentTimeMillis() + 7 * 24 * 60 * 60 * 1000)); // 7 days
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException("Error storing remember me token", e);
+        }
+    }
+
+    public static User validateRememberMeToken(String token) {
+        String sql = "SELECT u.* FROM users u JOIN remember_me_tokens t ON u.userId = t.userId " +
+                "WHERE t.token = ? AND t.expiry > NOW()";
+        try (Connection conn = DBConnection.getDbConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, token);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                User user = new User();
+                user.setUserId(rs.getInt("userId"));
+                user.setName(rs.getString("name"));
+                user.setEmail(rs.getString("email"));
+                user.setPassword(rs.getString("password"));
+                user.setRole(User.Role.valueOf(rs.getString("role")));
+                user.setProfilePicture(rs.getBytes("test-profile_picture"));
+                // Decrypt bio and address
+                user.setBio(EncryptionUtil.decrypt(rs.getString("bio")));
+                user.setAddress(EncryptionUtil.decrypt(rs.getString("address")));
+                return user;
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Error validating remember me token", e);
+        } catch (Exception e) {
+            throw new RuntimeException("Decryption error", e);
+        }
+        return null;
+    }
+
     public static boolean updateUser(User user) {
         try (Connection connection = DBConnection.getDbConnection();
              PreparedStatement ps = connection.prepareStatement(UPDATE_USER)) {
 
-            // Set parameters with null checks
             ps.setString(1, user.getName());
             ps.setString(2, user.getEmail());
-            ps.setString(3, user.getPassword());
-
-            if (user.getProfilePicture() != null) {
-                ps.setBytes(4, user.getProfilePicture());
-            } else {
-                ps.setNull(4, Types.BLOB);
-            }
-
+            // Hash password if updated
+            String hashedPassword = user.getPassword().startsWith("$") ?
+                    user.getPassword() : PasswordUtil.hashPassword(user.getPassword());
+            ps.setString(3, hashedPassword);
+            ps.setBytes(4, user.getProfilePicture() != null ? user.getProfilePicture() : null);
             ps.setString(5, user.getBio());
-            ps.setString(7, user.getAddress());
-
-            ps.setInt(9, user.getUserId());
+            ps.setString(6, user.getAddress());
+            ps.setInt(7, user.getUserId());
 
             int rowsUpdated = ps.executeUpdate();
             return rowsUpdated > 0;
-
         } catch (SQLException e) {
-            System.err.println("Update error [SQLState:" + e.getSQLState()
-                    + "]");
-            throw new RuntimeException("Database update failed: " +
-                    e.getMessage(), e);
-        } catch (IllegalArgumentException e) {
-            throw new RuntimeException("Invalid date format. Use yyyy-mm-dd", e);
+            throw new RuntimeException("Database update failed: " + e.getMessage(), e);
+        } catch (Exception e) {
+            throw new RuntimeException("Error hashing password", e);
         }
     }
 }

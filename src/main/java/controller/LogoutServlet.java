@@ -8,21 +8,21 @@ import java.io.IOException;
 
 @WebServlet("/logout")
 public class LogoutServlet extends HttpServlet {
+
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        System.out.println("LogoutServlet: Processing logout request"); // Debugging
-
-        // Invalidate the session
-        HttpSession session = request.getSession(false); // Don't create new session
+        HttpSession session = request.getSession(false);
         if (session != null) {
             session.invalidate();
-            System.out.println("LogoutServlet: Session invalidated"); // Debugging
         }
 
-        // Redirect to login page
-        String redirectUrl = request.getContextPath() + "/index.jsp";
-        System.out.println("LogoutServlet: Redirect URL: " + redirectUrl); // Debugging
-        response.sendRedirect(redirectUrl);
+        // Clear "Remember Me" cookie
+        Cookie rememberMeCookie = new Cookie("rememberMe", "");
+        rememberMeCookie.setMaxAge(0);
+        rememberMeCookie.setPath("/");
+        response.addCookie(rememberMeCookie);
+
+        response.sendRedirect(request.getContextPath() + "/view/login.jsp");
     }
 }

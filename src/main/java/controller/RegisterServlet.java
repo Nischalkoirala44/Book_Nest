@@ -2,7 +2,6 @@ package controller;
 
 import dao.UserDAO;
 import model.User;
-
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.annotation.WebServlet;
@@ -10,9 +9,10 @@ import jakarta.servlet.http.*;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.UUID;
 
 @WebServlet("/register")
-@MultipartConfig(maxFileSize = 1024 * 1024 * 5) // 5MB max file size
+@MultipartConfig(maxFileSize = 1024 * 1024 * 5)
 public class RegisterServlet extends HttpServlet {
 
     @Override
@@ -23,8 +23,9 @@ public class RegisterServlet extends HttpServlet {
         String email = request.getParameter("email");
         String password = request.getParameter("password");
         String roleParam = request.getParameter("role");
+        String bio = request.getParameter("bio");
+        String address = request.getParameter("address");
 
-        // Validate inputs
         if (name == null || email == null || password == null || name.trim().isEmpty() || email.trim().isEmpty() || password.trim().isEmpty()) {
             request.setAttribute("error", "All fields are required.");
             request.getRequestDispatcher("view/register.jsp").forward(request, response);
@@ -36,7 +37,6 @@ public class RegisterServlet extends HttpServlet {
             role = User.Role.admin;
         }
 
-        // Handle file upload
         byte[] profilePicture = null;
         Part filePart = request.getPart("profilePicture");
         if (filePart != null && filePart.getSize() > 0) {
@@ -53,16 +53,29 @@ public class RegisterServlet extends HttpServlet {
             }
             try (InputStream inputStream = filePart.getInputStream()) {
                 profilePicture = inputStream.readAllBytes();
-                System.out.println("Image size: " + profilePicture.length + " bytes"); // Debugging
             }
         }
 
-        User newUser = new User(name, email, password, role, profilePicture);
+        User newUser = new User();
+        newUser.setName(name);
+        newUser.setEmail(email);
+        newUser.setPassword(password);
+        newUser.setRole(role);
+        newUser.setProfilePicture(profilePicture);
+        newUser.setBio(bio);
+        newUser.setAddress(address);
 
         try {
             int userId = UserDAO.registerUser(newUser);
             if (userId != -1) {
-                response.sendRedirect(request.getContextPath() + "/view/login.jsp?registerSuccess=true");
+                // Log in the user after registration
+                HttpSession session = request.getSession(true);
+                session.setMaxInactiveInterval(30 * 60);
+                User registeredUser = UserDAO.getUserById(userId);
+                session.setAttribute("user", registeredUser);
+                String csrfToken = UUID.randomUUID().toString();
+                session.setAttribute("csrfToken", csrfToken);
+                response.sendRedirect(request.getContextPath() + "/view/home.jsp");
             } else {
                 request.setAttribute("error", "Registration failed. Email may already be in use.");
                 request.getRequestDispatcher("view/register.jsp").forward(request, response);
