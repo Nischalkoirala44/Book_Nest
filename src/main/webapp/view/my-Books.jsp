@@ -828,7 +828,7 @@
             title: "Ancient Civilizations",
             author: "Robert Johnson",
             category: "history",
-            coverImage: "/api/placeholder/250/350",
+            coverImage: "../assets/ancientCivilization.jpg",
             borrowDate: "2025-04-01",
             dueDate: "2025-04-29",
             isOverdue: false
@@ -838,7 +838,7 @@
             title: "Stars Beyond Reach",
             author: "Sarah Miller",
             category: "science-fiction",
-            coverImage: "https://via.placeholder.com/250x350.png?text=Stars+Beyond+Reach",
+            coverImage: "../assets/beyondreach.jpeg",
             borrowDate: "2025-03-25",
             dueDate: "2025-04-15",
             isOverdue: true
@@ -848,7 +848,7 @@
             title: "Love in Paris",
             author: "Sophie Martin",
             category: "romance",
-            coverImage: "https://via.placeholder.com/250x350.png?text=Love+in+Paris",
+            coverImage: "../assets/paris.jpg",
             borrowDate: "2025-04-10",
             dueDate: "2025-05-08",
             isOverdue: false

@@ -8,7 +8,7 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: Arial, sans-serif;
+            font-family: 'Inter', Arial, sans-serif;
         }
 
         :root {
@@ -20,11 +20,58 @@
         }
 
         body {
-            background-color: var(--secondary-color);
+            background: linear-gradient(135deg, #f5f5e8 0%, #e8d9c1 100%);
             color: var(--text-color);
             min-height: 100vh;
             display: flex;
             flex-direction: column;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Background Pattern and Animation */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40"><rect x="10" y="5" width="5" height="30" fill="%23d3c7a5" opacity="0.3"/><rect x="20" y="5" width="5" height="30" fill="%23d3c7a5" opacity="0.3"/><rect x="30" y="5" width="5" height="30" fill="%23d3c7a5" opacity="0.3"/></svg>') repeat;
+            opacity: 0.2;
+            z-index: -1;
+        }
+
+        .background-books {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .book-particle {
+            position: absolute;
+            font-size: 24px;
+            color: #d3c7a5;
+            opacity: 0.4;
+            animation: drift 15s infinite linear;
+        }
+
+        @keyframes drift {
+            0% {
+                transform: translateY(100vh) translateX(0);
+                opacity: 0.4;
+            }
+            50% {
+                opacity: 0.6;
+            }
+            100% {
+                transform: translateY(-100vh) translateX(20px);
+                opacity: 0.4;
+            }
         }
 
         /* Navigation Bar */
@@ -54,6 +101,7 @@
         .logo h1 {
             font-size: 24px;
             color: var(--text-color);
+            font-family: 'Georgia', serif;
         }
 
         .logo span {
@@ -115,7 +163,7 @@
 
         .dropdown-menu {
             position: absolute;
-            top: 50px;
+            top: 100%;
             right: 0;
             background-color: white;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
@@ -166,6 +214,7 @@
             margin-bottom: 20px;
             position: relative;
             padding-bottom: 10px;
+            font-family: 'Georgia', serif;
         }
 
         .section-title::after {
@@ -185,11 +234,14 @@
             padding: 60px 20px;
             text-align: center;
             margin-bottom: 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
 
         .hero h2 {
             font-size: 36px;
             margin-bottom: 15px;
+            font-family: 'Georgia', serif;
         }
 
         .hero p {
@@ -351,14 +403,14 @@
             }
 
             .category-item {
-                flex: 1 1 40%; /* Adjust for smaller screens */
+                flex: 1 1 40%;
                 min-width: 120px;
             }
         }
 
         @media (max-width: 480px) {
             .category-item {
-                flex: 1 1 100%; /* Stack on very small screens */
+                flex: 1 1 100%;
             }
         }
 
@@ -486,6 +538,7 @@
             margin-bottom: 15px;
             position: relative;
             padding-bottom: 10px;
+            font-family: 'Georgia', serif;
         }
 
         .footer-section h3::after {
@@ -683,8 +736,7 @@
         .book-details-cover img {
             width: 100%;
             height: 100%;
-        =\
-        object-fit: cover;
+            object-fit: cover;
         }
 
         .book-details-info {
@@ -739,6 +791,15 @@
     </style>
 </head>
 <body>
+<!-- Background Animation -->
+<div class="background-books">
+    <div class="book-particle" style="left: 10%; animation-delay: 0s;">📖</div>
+    <div class="book-particle" style="left: 30%; animation-delay: 2s;">📘</div>
+    <div class="book-particle" style="left: 50%; animation-delay: 4s;">📙</div>
+    <div class="book-particle" style="left: 70%; animation-delay: 6s;">📕</div>
+    <div class="book-particle" style="left: 90%; animation-delay: 8s;">📗</div>
+</div>
+
 <!-- Navigation Bar -->
 <nav class="navbar">
     <div class="nav-container">
@@ -751,16 +812,18 @@
             <li><a href="my-Books.jsp">My Books</a></li>
         </ul>
         <div class="user-actions">
-            <div class="user-profile" id="userProfileToggle">
+            <div class="user-profile" id="userProfileToggle" aria-haspopup="true" aria-expanded="false">
                 <% model.User user = (model.User) session.getAttribute("user"); %>
                 <div class="user-avatar">
-                    <% if (user.getProfilePicture() != null && user.getProfilePicture().length > 0) { %>
+                    <% if (user != null && user.getProfilePicture() != null && user.getProfilePicture().length > 0) { %>
                     <img src='profilePicture?userId=<%= user.getUserId() %>' alt='Profile Image' />
-                    <% } else { %>
+                    <% } else if (user != null) { %>
                     <%= user.getName().charAt(0) %>
+                    <% } else { %>
+                    G
                     <% } %>
                 </div>
-                <div class="user-name"><%= user.getName() %></div>
+                <div class="user-name"><%= user != null ? user.getName() : "Guest" %></div>
                 <div class="dropdown-menu" id="userDropdown">
                     <ul>
                         <li><a href="#" id="viewProfileBtn">View Profile</a></li>
@@ -797,7 +860,7 @@
             <!-- Book 1 -->
             <div class="book-card">
                 <div class="book-cover">
-                    <img src="https://via.placeholder.com/200x250" alt="Book Cover">
+                    <img src="../assets/gatsby.jpg" alt="Book Cover">
                 </div>
                 <div class="book-info">
                     <div class="book-title">The Great Gatsby</div>
@@ -811,7 +874,7 @@
             <!-- Book 2 -->
             <div class="book-card">
                 <div class="book-cover">
-                    <img src="https://via.placeholder.com/200x250" alt="Book Cover">
+                    <img src="../assets/to-kill-a-mockingbird-y9oj1gep.jpg" alt="Book Cover">
                 </div>
                 <div class="book-info">
                     <div class="book-title">To Kill a Mockingbird</div>
@@ -825,7 +888,7 @@
             <!-- Book 3 -->
             <div class="book-card">
                 <div class="book-cover">
-                    <img src="https://via.placeholder.com/200x250" alt="Book Cover">
+                    <img src="../assets/1984.jpeg" alt="Book Cover">
                 </div>
                 <div class="book-info">
                     <div class="book-title">1984</div>
@@ -839,7 +902,7 @@
             <!-- Book 4 -->
             <div class="book-card">
                 <div class="book-cover">
-                    <img src="https://via.placeholder.com/200x250" alt="Book Cover">
+                    <img src="../assets/prideandprejudice.jpeg" alt="Book Cover">
                 </div>
                 <div class="book-info">
                     <div class="book-title">Pride and Prejudice</div>
@@ -853,7 +916,7 @@
             <!-- Book 5 -->
             <div class="book-card">
                 <div class="book-cover">
-                    <img src="https://via.placeholder.com/200x250" alt="Book Cover">
+                    <img src="../assets/hobbit.jpeg" alt="Book Cover">
                 </div>
                 <div class="book-info">
                     <div class="book-title">The Hobbit</div>
@@ -871,7 +934,6 @@
         <h2 class="section-title">Browse by Category</h2>
         <div class="category-list">
             <%
-                // Simulated category list (replace with actual data from backend)
                 String[] categories = {"Fiction", "Non-Fiction", "Science", "History", "Biography", "Technology", "Business", "Self-Help", "Fantasy", "Mystery"};
                 for (String category : categories) {
             %>
@@ -895,7 +957,7 @@
                 <!-- Book 1 -->
                 <div class="book-list-item">
                     <div class="book-list-cover">
-                        <img src="https://via.placeholder.com/60x80" alt="Book Cover">
+                        <img src="../assets/catcher.jpg" alt="Book Cover">
                     </div>
                     <div class="book-list-info">
                         <div class="book-list-title">The Catcher in the Rye</div>
@@ -910,7 +972,7 @@
                 <!-- Book 2 -->
                 <div class="book-list-item">
                     <div class="book-list-cover">
-                        <img src="https://via.placeholder.com/60x80" alt="Book Cover">
+                        <img src="../assets/BraveNewWorld_FirstEdition.jpg" alt="Book Cover">
                     </div>
                     <div class="book-list-info">
                         <div class="book-list-title">Brave New World</div>
@@ -930,7 +992,7 @@
                 <!-- Book 1 -->
                 <div class="book-list-item">
                     <div class="book-list-cover">
-                        <img src="https://via.placeholder.com/60x80" alt="Book Cover">
+                        <img src="" alt="Book Cover">
                     </div>
                     <div class="book-list-info">
                         <div class="book-list-title">The Lord of the Rings</div>
@@ -998,7 +1060,7 @@
             <!-- Book 1 -->
             <div class="book-card">
                 <div class="book-cover">
-                    <img src="https://via.placeholder.com/200x250" alt="Book Cover">
+                    <img src="../assets/midnight.jpg" alt="Book Cover">
                 </div>
                 <div class="book-info">
                     <div class="book-title">The Midnight Library</div>
@@ -1012,7 +1074,7 @@
             <!-- Book 2 -->
             <div class="book-card">
                 <div class="book-cover">
-                    <img src="https://via.placeholder.com/200x250" alt="Book Cover">
+                    <img src="../assets/educated.jpeg" alt="Book Cover">
                 </div>
                 <div class="book-info">
                     <div class="book-title">Educated</div>
@@ -1026,7 +1088,7 @@
             <!-- Book 3 -->
             <div class="book-card">
                 <div class="book-cover">
-                    <img src="https://via.placeholder.com/200x250" alt="Book Cover">
+                    <img src="../assets/atomicHabits.jpg" alt="Book Cover">
                 </div>
                 <div class="book-info">
                     <div class="book-title">Atomic Habits</div>
@@ -1040,7 +1102,7 @@
             <!-- Book 4 -->
             <div class="book-card">
                 <div class="book-cover">
-                    <img src="https://via.placeholder.com/200x250" alt="Book Cover">
+                    <img src="../assets/hailmary.jpg" alt="Book Cover">
                 </div>
                 <div class="book-info">
                     <div class="book-title">Project Hail Mary</div>
@@ -1110,34 +1172,32 @@
         <div class="modal-body">
             <div class="profile-details">
                 <div class="profile-avatar">
-                    <% if (user.getProfilePicture() == null) { %>
+                    <% if (user != null && user.getProfilePicture() == null) { %>
                     <%= user.getName().substring(0, 1).toUpperCase() %>
+                    <% } else if (user != null) { %>
+                    <img src='profilePicture?userId=<%= user.getUserId() %>' alt='Profile Image' />
+                    <% } else { %>
+                    G
+                    <% } %>
                 </div>
                 <div class="profile-info">
                     <div class="profile-info-item">
                         <div class="profile-info-label">Name</div>
-                        <div class="profile-info-value"><%= user.getName() %></div>
+                        <div class="profile-info-value"><%= user != null ? user.getName() : "Guest" %></div>
                     </div>
                     <div class="profile-info-item">
                         <div class="profile-info-label">Email</div>
-                        <div class="profile-info-value"><%= user.getEmail() %></div>
+                        <div class="profile-info-value"><%= user != null ? user.getEmail() : "N/A" %></div>
                     </div>
                     <div class="profile-info-item">
                         <div class="profile-info-label">Bio</div>
-                        <div class="profile-info-value"><%= Objects.toString(user.getBio(), "No bio provided") %></div>
+                        <div class="profile-info-value"><%= user != null ? Objects.toString(user.getBio(), "No bio provided") : "N/A" %></div>
                     </div>
                     <div class="profile-info-item">
                         <div class="profile-info-label">Address</div>
-                        <div class="profile-info-value"><%= Objects.toString(user.getAddress(), "No address provided") %></div>
+                        <div class="profile-info-value"><%= user != null ? Objects.toString(user.getAddress(), "No address provided") : "N/A" %></div>
                     </div>
                 </div>
-                <% } else { %>
-                <div class="profile-info">
-                    <div class="profile-info-item">
-                        <div class="profile-info-value">Please log in to view profile details.</div>
-                    </div>
-                </div>
-                <% } %>
             </div>
         </div>
         <div class="modal-footer">
@@ -1185,101 +1245,91 @@
     </div>
 </div>
 <script>
-    // User Profile Dropdown Toggle
-    const userProfileToggle = document.getElementById('userProfileToggle');
-    const userDropdown = document.getElementById('userDropdown');
-    if (userProfileToggle && userDropdown) {
-        userProfileToggle.addEventListener('click', function(event) {
-            event.stopPropagation(); // Prevent click from bubbling up
-            userDropdown.classList.toggle('active');
-            // console.log('Dropdown toggled:', userDropdown.classList.contains('active')); // Debug log
-        });
-    }
-
-    // Close dropdown when clicking outside
-    document.addEventListener('click', function(event) {
-        if (userDropdown && !userProfileToggle.contains(event.target) && !userDropdown.contains(event.target)) {
-            userDropdown.classList.remove('active');
-            // console.log('Dropdown closed'); // Debug log
-        }
-    });
-
-    // Tab Switching
-    const tabs = document.querySelectorAll('.tab');
-    const tabContents = document.querySelectorAll('.tab-content');
-    tabs.forEach(tab => {
-        tab.addEventListener('click', function() {
-            const tabId = this.getAttribute('data-tab');
-            tabs.forEach(t => t.classList.remove('active'));
-            tabContents.forEach(c => c.classList.remove('active'));
-            this.classList.add('active');
-            document.getElementById(tabId).classList.add('active');
-        });
-    });
-
-    // Modal Functionality
-    const modals = document.querySelectorAll('.modal');
-    const modalCloseBtns = document.querySelectorAll('.modal-close, .modal-close-btn');
-    const viewProfileBtn = document.getElementById('viewProfileBtn');
-    const profileModal = document.getElementById('profileModal');
-    const bookDetailsModal = document.getElementById('bookDetailsModal');
-    const borrowButtons = document.querySelectorAll('.book-action');
-
-    // Open profile modal
-    if (viewProfileBtn) {
-        viewProfileBtn.addEventListener('click', function(e) {
-            e.preventDefault();
-            profileModal.classList.add('active');
-            userDropdown.classList.remove('active');
-            // console.log('Profile modal opened'); // Debug log
-        });
-    }
-
-    // Open book details modal when borrow button is clicked
-    borrowButtons.forEach(button => {
-        if (!button.disabled) {
-            button.addEventListener('click', function() {
-                bookDetailsModal.classList.add('active');
-                // console.log('Book details modal opened'); // Debug log
+    // Ensure DOM is fully loaded before attaching event listeners
+    document.addEventListener('DOMContentLoaded', function() {
+        // User Profile Dropdown Toggle
+        const userProfileToggle = document.getElementById('userProfileToggle');
+        const userDropdown = document.getElementById('userDropdown');
+        if (userProfileToggle && userDropdown) {
+            userProfileToggle.addEventListener('click', function(event) {
+                event.stopPropagation();
+                const isActive = userDropdown.classList.toggle('active');
+                userProfileToggle.setAttribute('aria-expanded', isActive);
             });
         }
-    });
 
-    // Close modals
-    modalCloseBtns.forEach(btn => {
-        btn.addEventListener('click', function() {
-            modals.forEach(modal => modal.classList.remove('active'));
-            // console.log('Modal closed'); // Debug log
-        });
-    });
-
-    // Close modal when clicking outside
-    modals.forEach(modal => {
-        modal.addEventListener('click', function(e) {
-            if (e.target === this) {
-                this.classList.remove('active');
-                // console.log('Modal closed via outside click'); // Debug log
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(event) {
+            if (userDropdown && !userProfileToggle.contains(event.target) && !userDropdown.contains(event.target)) {
+                userDropdown.classList.remove('active');
+                userProfileToggle.setAttribute('aria-expanded', 'false');
             }
         });
-    });
 
-    // Category Selection
-    const categoryItems = document.querySelectorAll('.category-item');
-    categoryItems.forEach(item => {
-        item.addEventListener('click', function() {
-            // Remove active class from all category items
-            categoryItems.forEach(i => i.classList.remove('active'));
-            // Add active class to the clicked item
-            this.classList.add('active');
+        // Tab Switching
+        const tabs = document.querySelectorAll('.tab');
+        const tabContents = document.querySelectorAll('.tab-content');
+        tabs.forEach(tab => {
+            tab.addEventListener('click', function() {
+                const tabId = this.getAttribute('data-tab');
+                tabs.forEach(t => t.classList.remove('active'));
+                tabContents.forEach(c => c.classList.remove('active'));
+                this.classList.add('active');
+                document.getElementById(tabId).classList.add('active');
+            });
+        });
 
-            // Get the category name
-            const category = this.getAttribute('data-category');
+        // Modal Functionality
+        const modals = document.querySelectorAll('.modal');
+        const modalCloseBtns = document.querySelectorAll('.modal-close, .modal-close-btn');
+        const viewProfileBtn = document.getElementById('viewProfileBtn');
+        const profileModal = document.getElementById('profileModal');
+        const bookDetailsModal = document.getElementById('bookDetailsModal');
+        const borrowButtons = document.querySelectorAll('.book-action');
 
-            // Navigate to browse page with category filter
-            window.location.href = `browse.jsp?category=${encodeURIComponent(category)}`;
+        // Open profile modal
+        if (viewProfileBtn) {
+            viewProfileBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                profileModal.classList.add('active');
+                userDropdown.classList.remove('active');
+            });
+        }
 
-            // Optional: Log for debugging
-            console.log(`Selected category: ${category}`);
+        // Open book details modal when borrow button is clicked
+        borrowButtons.forEach(button => {
+            if (!button.disabled) {
+                button.addEventListener('click', function() {
+                    bookDetailsModal.classList.add('active');
+                });
+            }
+        });
+
+        // Close modals
+        modalCloseBtns.forEach(btn => {
+            btn.addEventListener('click', function() {
+                modals.forEach(modal => modal.classList.remove('active'));
+            });
+        });
+
+        // Close modal when clicking outside
+        modals.forEach(modal => {
+            modal.addEventListener('click', function(e) {
+                if (e.target === this) {
+                    this.classList.remove('active');
+                }
+            });
+        });
+
+        // Category Selection
+        const categoryItems = document.querySelectorAll('.category-item');
+        categoryItems.forEach(item => {
+            item.addEventListener('click', function() {
+                categoryItems.forEach(i => i.classList.remove('active'));
+                this.classList.add('active');
+                const category = this.getAttribute('data-category');
+                window.location.href = `browse.jsp?category=${encodeURIComponent(category)}`;
+            });
         });
     });
 </script>

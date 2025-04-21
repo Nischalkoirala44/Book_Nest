@@ -663,7 +663,7 @@
         </div>
         <button class="hamburger" aria-label="Toggle navigation menu" aria-expanded="false">☰</button>
         <ul class="nav-links">
-            <li><a href="home.jsp" aria-current="page">Home</a></li>
+            <li><a href="home.jsp">Home</a></li>
             <li><a href="browse.jsp" class="active" aria-current="page">Browse</a></li>
             <li><a href="my-Books.jsp">My Books</a></li>
         </ul>
@@ -672,11 +672,13 @@
                 <% model.User user = (model.User) session.getAttribute("user"); %>
                 <% if (user != null) { %>
                 <div class="user-avatar">
-                    <%= user.getProfilePicture() != null
-                            ? "<img src='profilePicture?userId=" + user.getUserId() + "' alt='Profile Image' />"
-                            : user.getName().charAt(0)
-                    %>
+                    <% if (user.getProfilePicture() != null) { %>
+                    <img src="profilePicture?userId=<%= user.getUserId() %>" alt="Profile Image" />
+                    <% } else { %>
+                    <%= user.getName().charAt(0) %>
+                    <% } %>
                 </div>
+
                 <div class="user-name"><%= user.getName() %></div>
                 <% } else { %>
                 <div class="user-avatar">G</div>
@@ -931,7 +933,7 @@
             title: "The Silent Echo",
             author: "Jane Doe",
             category: "fiction",
-            coverImage: "/api/placeholder/250/350",
+            coverImage: "../assets/silentEcho.jpeg",
             available: true
         },
         {
@@ -939,7 +941,7 @@
             title: "Cosmic Horizons",
             author: "John Smith",
             category: "science",
-            coverImage: "/api/placeholder/250/350",
+            coverImage: "../assets/cosmicHorizons.jpg",
             available: true
         },
         {
@@ -947,7 +949,7 @@
             title: "Ancient Civilizations",
             author: "Robert Johnson",
             category: "history",
-            coverImage: "/api/placeholder/250/350",
+            coverImage: "../assets/ancientCivilization.jpg",
             available: false
         },
         {
@@ -955,7 +957,7 @@
             title: "The Power of Habits",
             author: "Emily Wilson",
             category: "self-help",
-            coverImage: "/api/placeholder/250/350",
+            coverImage: "../assets/thehabit.jpeg",
             available: true
         },
         {
