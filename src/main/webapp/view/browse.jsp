@@ -664,7 +664,7 @@
         <button class="hamburger" aria-label="Toggle navigation menu" aria-expanded="false">☰</button>
         <ul class="nav-links">
             <li><a href="home.jsp">Home</a></li>
-            <li><a href="browse.jsp" class="active" aria-current="page">Browse</a></li>
+            <li><a href="#" class="active" aria-current="page">Browse</a></li>
             <li><a href="my-Books.jsp">My Books</a></li>
         </ul>
         <div class="user-actions">
@@ -673,7 +673,7 @@
                 <% if (user != null) { %>
                 <div class="user-avatar">
                     <% if (user.getProfilePicture() != null) { %>
-                    <img src="profilePicture?userId=<%= user.getUserId() %>" alt="Profile Image" />
+                    <img src="<%= user.getProfilePicture() %>" alt="Profile Image" />
                     <% } else { %>
                     <%= user.getName().charAt(0) %>
                     <% } %>

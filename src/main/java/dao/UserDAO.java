@@ -30,7 +30,7 @@ public class UserDAO {
             ps.setBytes(5, user.getProfilePicture());
             // Encrypt bio and address
             ps.setString(6, EncryptionUtil.encrypt(user.getBio()));
-            ps.setString(7, EncryptionUtil.encrypt(user.getAddress()));
+            ps.setString(7,user.getAddress());
 
             int rows = ps.executeUpdate();
             if (rows > 0) {

@@ -75,7 +75,7 @@ public class RegisterServlet extends HttpServlet {
                 session.setAttribute("user", registeredUser);
                 String csrfToken = UUID.randomUUID().toString();
                 session.setAttribute("csrfToken", csrfToken);
-                response.sendRedirect(request.getContextPath() + "/view/home.jsp");
+                response.sendRedirect(request.getContextPath() + "/view/login.jsp");
             } else {
                 request.setAttribute("error", "Registration failed. Email may already be in use.");
                 request.getRequestDispatcher("view/register.jsp").forward(request, response);

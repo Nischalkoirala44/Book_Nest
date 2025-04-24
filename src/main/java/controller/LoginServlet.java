@@ -41,14 +41,11 @@ public class LoginServlet extends HttpServlet {
                 HttpSession session = request.getSession();
                 session.setAttribute("user", authenticatedUser);
                 // Redirect based on role
-                String redirectUrl;
                 if (authenticatedUser.getRole() == User.Role.admin) {
-                    redirectUrl = request.getContextPath() + "/view/adminPanel.jsp";
+                    response.sendRedirect(request.getContextPath() + "/view/adminPanel.jsp");
                 } else {
-                    redirectUrl = request.getContextPath() + "/view/home.jsp";
+                    response.sendRedirect(request.getContextPath() + "/view/home.jsp");
                 }
-                System.out.println("LoginServlet: Redirect URL: " + redirectUrl); // Debugging
-                response.sendRedirect(redirectUrl);
             } else {
                 System.out.println("LoginServlet: Login failed for user: " + email); // Debugging
                 request.setAttribute("error", "Invalid email or password.");
