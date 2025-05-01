@@ -31,7 +31,7 @@ public class LoginServlet extends HttpServlet {
 
         User loginAttempt = new User();
         loginAttempt.setEmail(email);
-        loginAttempt.setPassword(password); // In production, hash password
+        loginAttempt.setPassword(password);
 
         try {
             User authenticatedUser = UserDAO.loginUser(loginAttempt);

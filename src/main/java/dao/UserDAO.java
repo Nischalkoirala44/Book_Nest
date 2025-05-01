@@ -3,7 +3,6 @@ package dao;
 import model.User;
 import util.DBConnection;
 import util.PasswordUtil;
-import util.EncryptionUtil;
 
 import java.sql.*;
 
@@ -28,8 +27,7 @@ public class UserDAO {
             ps.setString(3, hashedPassword);
             ps.setString(4, user.getRole().name());
             ps.setBytes(5, user.getProfilePicture());
-            // Encrypt bio and address
-            ps.setString(6, EncryptionUtil.encrypt(user.getBio()));
+            ps.setString(6, user.getBio());
             ps.setString(7,user.getAddress());
 
             int rows = ps.executeUpdate();
@@ -63,8 +61,8 @@ public class UserDAO {
                 user.setRole(User.Role.valueOf(rs.getString("role")));
                 user.setProfilePicture(rs.getBytes("profile_picture"));
                 // Decrypt bio and address
-                user.setBio(EncryptionUtil.decrypt(rs.getString("bio")));
-                user.setAddress(EncryptionUtil.decrypt(rs.getString("address")));
+                user.setBio(rs.getString("bio"));
+                user.setAddress(rs.getString("address"));
 
                 if (PasswordUtil.verifyPassword(loginAttempt.getPassword(), user.getPassword())) {
                     return user;
@@ -73,7 +71,7 @@ public class UserDAO {
         } catch (SQLException e) {
             throw new RuntimeException("Database error during login", e);
         } catch (Exception e) {
-            throw new RuntimeException("Decryption error", e);
+            throw new RuntimeException("Error during login",e);
         }
         return null;
     }
@@ -130,8 +128,8 @@ public class UserDAO {
                 user.setRole(User.Role.valueOf(rs.getString("role")));
                 user.setProfilePicture(rs.getBytes("test-profile_picture"));
                 // Decrypt bio and address
-                user.setBio(EncryptionUtil.decrypt(rs.getString("bio")));
-                user.setAddress(EncryptionUtil.decrypt(rs.getString("address")));
+                user.setBio(rs.getString("bio"));
+                user.setAddress(rs.getString("address"));
                 return user;
             }
         } catch (SQLException e) {
