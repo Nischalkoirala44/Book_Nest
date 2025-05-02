@@ -661,36 +661,29 @@
         <div class="logo">
             <h1><span>Book</span> Nest</h1>
         </div>
-        <button class="hamburger" aria-label="Toggle navigation menu" aria-expanded="false">☰</button>
         <ul class="nav-links">
-            <li><a href="home.jsp">Home</a></li>
-            <li><a href="#" class="active" aria-current="page">Browse</a></li>
+            <li><a href="home.jsp" >Home</a></li>
+            <li><a href="#" class="active">Browse</a></li>
             <li><a href="my-Books.jsp">My Books</a></li>
         </ul>
         <div class="user-actions">
             <div class="user-profile" id="userProfileToggle" aria-haspopup="true" aria-expanded="false">
                 <% model.User user = (model.User) session.getAttribute("user"); %>
-                <% if (user != null) { %>
                 <div class="user-avatar">
-                    <% if (user.getProfilePicture() != null) { %>
-                    <img src="<%= user.getProfilePicture() %>" alt="Profile Image" />
-                    <% } else { %>
+                    <% if (user != null && user.getProfilePicture() != null && user.getProfilePicture().length > 0) { %>
+                    <img src='=<%= user.getUserId() %>' alt='Profile Image' />
+                    <% } else if (user != null) { %>
                     <%= user.getName().charAt(0) %>
+                    <% } else { %>
+                    G
                     <% } %>
                 </div>
-
-                <div class="user-name"><%= user.getName() %></div>
-                <% } else { %>
-                <div class="user-avatar">G</div>
-                <div class="user-name">Guest</div>
-                <% } %>
+                <div class="user-name"><%= user != null ? user.getName() : "Guest" %></div>
                 <div class="dropdown-menu" id="userDropdown">
                     <ul>
                         <li><a href="#" id="viewProfileBtn">View Profile</a></li>
                         <li><a href="my-Books.jsp">My Books</a></li>
-                        <% if (user != null) { %>
                         <li class="logout"><a href="${pageContext.request.contextPath}/logout">Logout</a></li>
-                        <% } %>
                     </ul>
                 </div>
             </div>
@@ -904,7 +897,7 @@
     // Modal Functionality
     const profileModal = document.getElementById('profileModal');
     const viewProfileBtn = document.getElementById('viewProfileBtn');
-    const modalCloseBtns = document.querySelectorAll('.modal-close, .modal-close-btn');
+    const modalCloseBtn = document.querySelectorAll('.modal-close, .modal-close-btn');
 
     if (viewProfileBtn) {
         viewProfileBtn.addEventListener('click', function(e) {

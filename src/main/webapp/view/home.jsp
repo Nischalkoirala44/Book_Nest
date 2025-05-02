@@ -816,7 +816,7 @@
                 <% model.User user = (model.User) session.getAttribute("user"); %>
                 <div class="user-avatar">
                     <% if (user != null && user.getProfilePicture() != null && user.getProfilePicture().length > 0) { %>
-                    <img src='=<%= user.getUserId() %>' alt='Profile Image' />
+                    <img src='=<%= user.getProfilePicture() %>' alt='Profile Image' />
                     <% } else if (user != null) { %>
                     <%= user.getName().charAt(0) %>
                     <% } else { %>
@@ -1245,18 +1245,17 @@
     </div>
 </div>
 <script>
-    // Ensure DOM is fully loaded before attaching event listeners
-    document.addEventListener('DOMContentLoaded', function() {
-        // User Profile Dropdown Toggle
-        const userProfileToggle = document.getElementById('userProfileToggle');
-        const userDropdown = document.getElementById('userDropdown');
-        if (userProfileToggle && userDropdown) {
-            userProfileToggle.addEventListener('click', function(event) {
-                event.stopPropagation();
-                const isActive = userDropdown.classList.toggle('active');
-                userProfileToggle.setAttribute('aria-expanded', isActive);
-            });
-        }
+
+    // User Profile Dropdown Toggle
+    const userProfileToggle = document.getElementById('userProfileToggle');
+    const userDropdown = document.getElementById('userDropdown');
+    if (userProfileToggle && userDropdown) {
+        userProfileToggle.addEventListener('click', function(event) {
+            event.stopPropagation();
+            const isActive = userDropdown.classList.toggle('active');
+            userProfileToggle.setAttribute('aria-expanded', isActive);
+        });
+    }
 
         // Close dropdown when clicking outside
         document.addEventListener('click', function(event) {
@@ -1281,11 +1280,12 @@
 
         // Modal Functionality
         const modals = document.querySelectorAll('.modal');
-        const modalCloseBtns = document.querySelectorAll('.modal-close, .modal-close-btn');
+        const modalCloseBtn = document.querySelectorAll('.modal-close, .modal-close-btn');
         const viewProfileBtn = document.getElementById('viewProfileBtn');
         const profileModal = document.getElementById('profileModal');
         const bookDetailsModal = document.getElementById('bookDetailsModal');
         const borrowButtons = document.querySelectorAll('.book-action');
+
 
         // Open profile modal
         if (viewProfileBtn) {
@@ -1321,15 +1321,14 @@
             });
         });
 
-        // Category Selection
-        const categoryItems = document.querySelectorAll('.category-item');
-        categoryItems.forEach(item => {
-            item.addEventListener('click', function() {
-                categoryItems.forEach(i => i.classList.remove('active'));
-                this.classList.add('active');
-                const category = this.getAttribute('data-category');
-                window.location.href = `browse.jsp?category=${encodeURIComponent(category)}`;
-            });
+    // Category Selection
+    const categoryItems = document.querySelectorAll('.category-item');
+    categoryItems.forEach(item => {
+        item.addEventListener('click', function() {
+            categoryItems.forEach(i => i.classList.remove('active'));
+            this.classList.add('active');
+            const category = this.getAttribute('data-category');
+            window.location.href = `browse.jsp?category=${encodeURIComponent(category)}`;
         });
     });
 </script>
