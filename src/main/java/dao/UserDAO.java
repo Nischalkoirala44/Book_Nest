@@ -38,6 +38,7 @@ public class UserDAO {
                 }
             }
         } catch (SQLException e) {
+            System.out.println(e.getMessage());
             throw new RuntimeException("Database error during registration", e);
         } catch (Exception e) {
             throw new RuntimeException("Encryption error", e);

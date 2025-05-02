@@ -12,8 +12,11 @@ public class DBConnection {
     public static Connection getDbConnection() throws SQLException {
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
+            System.out.println("helloo");
             return DriverManager.getConnection(URL, USER, PASSWORD);
+
         } catch (ClassNotFoundException e) {
+            System.out.println(e.getMessage());
             throw new SQLException(e);
         }
     }
