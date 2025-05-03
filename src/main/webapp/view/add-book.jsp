@@ -1,10 +1,3 @@
-<%--
-  Created by IntelliJ IDEA.
-  User: Nischal Koirala
-  Date: 5/1/2025
-  Time: 9:05 PM
-  To change this template use File | Settings | File Templates.
---%>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html>
@@ -37,24 +30,31 @@
             margin-bottom: 5px;
             color: #555;
         }
-        input[type="text"], input[type="number"], input[type="file"] {
+        input[type="text"], input[type="number"], input[type="file"], select {
             width: 100%;
             padding: 8px;
             border: 1px solid #ddd;
             border-radius: 4px;
             box-sizing: border-box;
         }
-        input[type="submit"] {
+        input[type="submit"], input[type="button"] {
             background-color: #4CAF50;
             color: white;
             padding: 10px 15px;
             border: none;
             border-radius: 4px;
             cursor: pointer;
-            width: 100%;
+            width: 48%;
+            margin: 1%;
+        }
+        input[type="button"] {
+            background-color: #ccc;
         }
         input[type="submit"]:hover {
             background-color: #45a049;
+        }
+        input[type="button"]:hover {
+            background-color: #bbb;
         }
         .error {
             color: red;
@@ -69,7 +69,7 @@
     <p class="error"><%= request.getAttribute("errorMessage") %></p>
     <% } %>
     <form action="${pageContext.request.contextPath}/AddBookServlet" method="post" enctype="multipart/form-data">
-    <div class="form-group">
+        <div class="form-group">
             <label for="title">Title:</label>
             <input type="text" id="title" name="title" required>
         </div>
@@ -83,13 +83,21 @@
         </div>
         <div class="form-group">
             <label for="category">Category:</label>
-            <input type="text" id="category" name="category" required>
+            <select id="category" name="category" required>
+                <option value="Fiction">Fiction</option>
+                <option value="Non-Fiction">Non-Fiction</option>
+                <option value="Science">Science</option>
+                <option value="History">History</option>
+                <option value="Biography">Biography</option>
+                <option value="Fantasy">Fantasy</option>
+            </select>
         </div>
         <div class="form-group">
             <label for="bookImage">Book Image:</label>
             <input type="file" id="bookImage" name="bookImage" accept="image/*">
         </div>
         <input type="submit" value="Add Book">
+        <input type="button" value="Cancel" onclick="window.location.href='${pageContext.request.contextPath}/view/adminPanel.jsp'">
     </form>
 </div>
 </body>

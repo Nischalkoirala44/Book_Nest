@@ -125,6 +125,7 @@
     <a href="${pageContext.request.contextPath}/view/users.jsp">Users</a>
     <a href="${pageContext.request.contextPath}/view/issued.jsp">Issued</a>
     <a href="${pageContext.request.contextPath}/view/add-book.jsp">Add Book</a>
+    <a href="${pageContext.request.contextPath}/view/viewBook.jsp">Book test</a>
     <a href="${pageContext.request.contextPath}/view/register.jsp">Logout</a>
 </div>
 

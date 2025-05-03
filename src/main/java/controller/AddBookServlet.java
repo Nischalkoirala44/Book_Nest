@@ -16,17 +16,17 @@ import model.Book;
 
 @WebServlet("/AddBookServlet")
 @MultipartConfig(maxFileSize = 1024 * 1024 * 5)
-
-public class AddBookServlet extends  HttpServlet {
-    private  static final long serialVersionUID = 1L;
+public class AddBookServlet extends HttpServlet {
+    private static final long serialVersionUID = 1L;
     private BookDAO bookDAO;
 
     public void init() {
         bookDAO = new BookDAO();
     }
 
-    public void doPost(HttpServletRequest request, HttpServletResponse response)
-        throws ServletException, IOException {
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+
         String title = request.getParameter("title");
         String author = request.getParameter("author");
         String totalCopiesStr = request.getParameter("totalCopies");
@@ -42,13 +42,15 @@ public class AddBookServlet extends  HttpServlet {
             int totalCopies = Integer.parseInt(totalCopiesStr);
             Book newBook = new Book(title, author, totalCopies, category, bookImage);
             bookDAO.insertBook(newBook);
-            response.sendRedirect(request.getContextPath() + "/view/adminPanel.jsp");
+            response.sendRedirect(request.getContextPath() + "/view/viewBook.jsp");
 
         } catch (NumberFormatException e) {
-            request.setAttribute("errorMessage", "Invalid number format");
-            request.getRequestDispatcher("addBook.jsp").forward(request, response);
+            request.setAttribute("errorMessage", "Invalid number format.");
+            request.getRequestDispatcher("/view/add-book.jsp").forward(request, response);
         } catch (SQLException e) {
             request.setAttribute("errorMessage", "Failed to add book: " + e.getMessage());
+            request.getRequestDispatcher("/view/add-book.jsp").forward(request, response);
+
         } finally {
             if (bookImage != null) {
                 bookImage.close();

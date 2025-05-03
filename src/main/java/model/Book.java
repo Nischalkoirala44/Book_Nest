@@ -1,4 +1,5 @@
 package model;
+
 import java.io.InputStream;
 
 public class Book {
@@ -8,12 +9,9 @@ public class Book {
     private String author;
     private int totalCopies;
     private String category;
-    private String borrowDate;
-    private String returnDate;
     private InputStream bookImage;
 
     public Book() {
-
     }
 
     public Book(String title, String author, int totalCopies, String category, InputStream bookImage) {
@@ -21,7 +19,6 @@ public class Book {
         this.author = author;
         this.totalCopies = totalCopies;
         this.category = category;
-
         this.bookImage = bookImage;
     }
 
@@ -63,22 +60,6 @@ public class Book {
 
     public void setCategory(String category) {
         this.category = category;
-    }
-
-    public String getBorrowDate() {
-        return borrowDate;
-    }
-
-    public void setBorrowDate(String borrowDate) {
-        this.borrowDate = borrowDate;
-    }
-
-    public String getReturnDate() {
-        return returnDate;
-    }
-
-    public void setReturnDate(String returnDate) {
-        this.returnDate = returnDate;
     }
 
     public InputStream getBookImage() {

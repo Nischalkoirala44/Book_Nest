@@ -9,7 +9,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.Part;
 import model.User;
 import util.DBConnection;
-import dao.UserDAO;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -38,7 +37,7 @@ public class UpdateProfileServlet extends HttpServlet {
         String email = request.getParameter("email");
         String bio = request.getParameter("bio");
         String address = request.getParameter("address");
-        byte[] image = user.getProfilePicture();  // keep the existing image if not updated
+        byte[] image = user.getProfilePicture();
 
         // Handle profile image upload (if present)
         Part filePart = request.getPart("profileImage");

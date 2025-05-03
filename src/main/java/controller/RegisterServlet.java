@@ -69,7 +69,6 @@ public class RegisterServlet extends HttpServlet {
         try {
             int userId = UserDAO.registerUser(newUser);
             if (userId != -1) {
-                // Log in the user after registration
                 HttpSession session = request.getSession(true);
                 session.setMaxInactiveInterval(30 * 60);
                 User registeredUser = UserDAO.getUserById(userId);

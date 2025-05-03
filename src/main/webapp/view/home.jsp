@@ -816,7 +816,7 @@
                 <% model.User user = (model.User) session.getAttribute("user"); %>
                 <div class="user-avatar">
                     <% if (user != null && user.getProfilePicture() != null && user.getProfilePicture().length > 0) { %>
-                    <img src='=<%= user.getProfilePicture() %>' alt='Profile Image' />
+                    <img src='<%= user.getProfilePicture() %>' alt='Profile Image' />
                     <% } else if (user != null) { %>
                     <%= user.getName().charAt(0) %>
                     <% } else { %>
@@ -1175,7 +1175,7 @@
                     <% if (user != null && user.getProfilePicture() == null) { %>
                     <%= user.getName().substring(0, 1).toUpperCase() %>
                     <% } else if (user != null) { %>
-                    <img src='profilePicture?userId=<%= user.getUserId() %>' alt='Profile Image' />
+                    <img src='<%= user.getProfilePicture() %>' alt='Profile Image' />
                     <% } else { %>
                     G
                     <% } %>
