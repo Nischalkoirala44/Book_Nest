@@ -1,5 +1,7 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ page import="dao.UserDAO,model.User,java.util.List" %>
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -103,32 +105,30 @@
     <table>
         <tr>
             <th>Full Name</th>
-            <th>Username</th>
             <th>Email</th>
-            <th>Phone</th>
-            <th>Registered On</th>
+            <th>Address</th>
+            <th>Role</th>
         </tr>
+
+        <%
+            UserDAO userDAO = new UserDAO();
+            try {
+                List<User> users = userDAO.getAllUsers();
+                for (User user : users) {
+
+        %>
+
         <tr>
-            <td>Ram Bahadur</td>
-            <td>ram123</td>
-            <td>ram@example.com</td>
-            <td>9800000001</td>
-            <td>March 20, 2025</td>
+            <td><%= user.getName()%></td>
+            <td><%= user.getEmail()%></td>
+            <td><%= user.getAddress()%></td>
+            <td><%= user.getRole()%></td>
         </tr>
-        <tr>
-            <td>Sita Kumari</td>
-            <td>sita_k</td>
-            <td>sita@example.com</td>
-            <td>9800000002</td>
-            <td>April 2, 2025</td>
-        </tr>
-        <tr>
-            <td>Hari Shrestha</td>
-            <td>harish</td>
-            <td>hari@example.com</td>
-            <td>9800000003</td>
-            <td>April 10, 2025</td>
-        </tr>
+        <% }
+} catch (Exception e) {
+    out.println("Error: " + e.getMessage());
+}
+            %>
     </table>
 </div>
 </body>

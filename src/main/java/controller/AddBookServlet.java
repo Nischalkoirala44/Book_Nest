@@ -42,14 +42,14 @@ public class AddBookServlet extends HttpServlet {
             int totalCopies = Integer.parseInt(totalCopiesStr);
             Book newBook = new Book(title, author, totalCopies, category, bookImage);
             bookDAO.insertBook(newBook);
-            response.sendRedirect(request.getContextPath() + "/view/viewBook.jsp");
+            response.sendRedirect(request.getContextPath() + "/view/books.jsp");
 
         } catch (NumberFormatException e) {
             request.setAttribute("errorMessage", "Invalid number format.");
-            request.getRequestDispatcher("/view/add-book.jsp").forward(request, response);
+            request.getRequestDispatcher("/view/books.jsp").forward(request, response);
         } catch (SQLException e) {
             request.setAttribute("errorMessage", "Failed to add book: " + e.getMessage());
-            request.getRequestDispatcher("/view/add-book.jsp").forward(request, response);
+            request.getRequestDispatcher("/view/books.jsp").forward(request, response);
 
         } finally {
             if (bookImage != null) {

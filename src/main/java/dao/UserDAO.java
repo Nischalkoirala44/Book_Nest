@@ -5,6 +5,8 @@ import util.DBConnection;
 import util.PasswordUtil;
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class UserDAO {
 
@@ -16,6 +18,9 @@ public class UserDAO {
             "SELECT userId, name, email, password, role, profile_picture, bio, address FROM users WHERE userId = ?";
     private static final String UPDATE_USER =
             "UPDATE users SET name=?, email=?, password=?, profile_picture=?, bio=?, address=? WHERE userId=?";
+
+    private  static final String SELECT_USER =
+            "SELECT * FROM users";
 
     public static int registerUser(User user) {
         try (Connection connection = DBConnection.getDbConnection();
@@ -99,4 +104,35 @@ public class UserDAO {
         }
         return null;
     }
+
+    public static List<User> getAllUsers() {
+        List<User> users = new ArrayList<>();
+        try (Connection conn = DBConnection.getDbConnection();
+             PreparedStatement ps = conn.prepareStatement(SELECT_USER);
+             ResultSet rs = ps.executeQuery()) {
+
+            while (rs.next()) {
+                User user = new User();
+                user.setUserId(rs.getInt("userid"));
+                user.setName(rs.getString("name"));
+                user.setEmail(rs.getString("email"));
+                user.setPassword(rs.getString("password"));
+                user.setAddress(rs.getString("address"));
+                user.setBio(rs.getString("bio"));
+
+                String roleStr = rs.getString("role");
+                if (roleStr != null) {
+                    user.setRole(User.Role.valueOf(roleStr.toLowerCase()));
+                }
+
+                user.setProfilePicture(rs.getBytes("profile_picture")); // if needed
+
+                users.add(user);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Database error fetching users", e);
+        }
+        return users;
+    }
+
 }

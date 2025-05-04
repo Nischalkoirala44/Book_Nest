@@ -1,5 +1,8 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ page import="dao.BookDAO,model.Book,java.util.List" %>
+
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -162,44 +165,69 @@
 
 <div class="main">
     <h1>📚 Manage Books</h1>
-
-    <form class="book-form">
-        <input type="text" placeholder="Book Title" required>
-        <input type="text" placeholder="Author" required>
-        <input type="text" placeholder="Category" required>
-        <input type="date" required>
-        <button type="submit">Add Book</button>
+    <% if (request.getAttribute("errorMessage") != null) { %>
+    <p class="error"><%= request.getAttribute("errorMessage") %></p>
+    <% } %>
+    <form class="book-form" action="${pageContext.request.contextPath}/AddBookServlet" method="post" enctype="multipart/form-data">
+        <input type="text" name="title" placeholder="Book Title" required>
+        <input type="text" name="author" placeholder="Author" required>
+        <input type="number" name="totalCopies" placeholder="Total Copies" min="1" required>
+        <select id="category" name="category" required>
+            <option value="Fiction">Fiction</option>
+            <option value="Non-Fiction">Non-Fiction</option>
+            <option value="Science">Science</option>
+            <option value="History">History</option>
+            <option value="Biography">Biography</option>
+            <option value="Fantasy">Fantasy</option>
+        </select>
+        <input type="file" id="bookImage" name="bookImage" accept="image/*">
+        <button type="submit" value="Add Book">Add Book</button>
+        <input type="button" value="Cancel" onclick="window.location.href='${pageContext.request.contextPath}/view/books.jsp'">
     </form>
 
     <table>
         <tr>
+            <th>Image</th>
             <th>Title</th>
             <th>Author</th>
             <th>Category</th>
-            <th>Date Added</th>
+            <th>Total Copies</th>
+            <th>Date & Time Added</th>
             <th>Actions</th>
         </tr>
+        <%
+            BookDAO bookDAO = new BookDAO();
+            try {
+                List<Book> books = bookDAO.getAllBooks();
+                for (Book book : books) {
+        %>
         <tr>
-            <td>Java for Beginners</td>
-            <td>Sunil Thapa</td>
+            <td><img src="BookImageServlet?bookId=<%= book.getBookId() %>"></td>
+            <td><%= book.getTitle() %></td>
+            <td><%= book.getAuthor() %></td>
             <td>Programming</td>
-            <td>April 10, 2025</td>
+            <td><%= book.getTotalCopies() %></td>
+            <td><%= book.getCategory() %></td>
             <td class="actions">
                 <button class="edit-btn">Edit</button>
                 <button class="delete-btn">Delete</button>
             </td>
         </tr>
-        <tr>
-            <td>Web Design Basics</td>
-            <td>Asha Gurung</td>
-            <td>Design</td>
-            <td>April 5, 2025</td>
-            <td class="actions">
-                <button class="edit-btn">Edit</button>
-                <button class="delete-btn">Delete</button>
-            </td>
-        </tr>
+        <%
+            }
+            } catch (Exception e) {
+                out.println("Error: " + e.getMessage());
+            }
+        %>
     </table>
+
 </div>
+<script>
+    document.getElementById('addBookForm').addEventListener('submit', function () {
+        const now = new Date();
+        const formattedDateTime = now.toISOString(); // ISO format: YYYY-MM-DDTHH:MM:SSZ
+        document.getElementById('addedDateTime').value = formattedDateTime;
+    });
+</script>
 </body>
 </html>
