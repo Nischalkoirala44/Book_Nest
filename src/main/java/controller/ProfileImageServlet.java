@@ -1,6 +1,6 @@
 package controller;
 
-import dao.BookDAO;
+import dao.UserDAO;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -10,22 +10,22 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Arrays;
 
-@WebServlet("/BookImageServlet")
-public class BookImageServlet extends HttpServlet {
-    private BookDAO bookDAO;
+@WebServlet("/ProfileImageServlet")
+public class ProfileImageServlet extends HttpServlet {
+    private UserDAO userDAO;
 
     @Override
     public void init() {
-        bookDAO = new BookDAO();
+        userDAO = new UserDAO();
     }
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        String bookIdStr = request.getParameter("bookId");
+        String userIdStr = request.getParameter("userId");
         try {
-            int bookId = Integer.parseInt(bookIdStr);
-            byte[] imageData = bookDAO.getBookImage(bookId);
+            int userId = Integer.parseInt(userIdStr);
+            byte[] imageData = userDAO.getProfilePicture(userId);
             if (imageData != null) {
                 response.setContentType("image/jpeg");
                 response.getOutputStream().write(imageData);
@@ -33,9 +33,9 @@ public class BookImageServlet extends HttpServlet {
                 response.sendError(HttpServletResponse.SC_NOT_FOUND, "Image not found");
             }
         } catch (NumberFormatException e) {
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid book ID");
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid user ID");
         } catch (SQLException e) {
-            throw new ServletException("Cannot retrieve book image", e);
+            throw new ServletException("Cannot retrieve profile image", e);
         }
     }
 }

@@ -157,6 +157,13 @@
             margin-right: 10px;
         }
 
+        .user-avatar img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
         .user-name {
             font-weight: 500;
         }
@@ -816,7 +823,7 @@
                 <% model.User user = (model.User) session.getAttribute("user"); %>
                 <div class="user-avatar">
                     <% if (user != null && user.getProfilePicture() != null && user.getProfilePicture().length > 0) { %>
-                    <img src='<%= user.getProfilePicture() %>' alt='Profile Image' />
+                    <img src='${pageContext.request.contextPath}/ProfileImageServlet?userId=<%= user.getUserId() %>' alt='Profile Image' />
                     <% } else if (user != null) { %>
                     <%= user.getName().charAt(0) %>
                     <% } else { %>
@@ -1172,10 +1179,10 @@
         <div class="modal-body">
             <div class="profile-details">
                 <div class="profile-avatar">
-                    <% if (user != null && user.getProfilePicture() == null) { %>
-                    <%= user.getName().substring(0, 1).toUpperCase() %>
+                    <% if (user != null && user.getProfilePicture() != null && user.getProfilePicture().length > 0) { %>
+                    <img src='${pageContext.request.contextPath}/ProfileImageServlet?userId=<%= user.getUserId() %>' alt='Profile Image' />
                     <% } else if (user != null) { %>
-                    <img src='<%= user.getProfilePicture() %>' alt='Profile Image' />
+                    <%= user.getName().charAt(0) %>
                     <% } else { %>
                     G
                     <% } %>

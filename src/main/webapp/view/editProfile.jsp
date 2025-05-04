@@ -84,6 +84,13 @@
             position: relative;
         }
 
+        .profile-image-container img {
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+            border-radius: 50%;
+        }
+
         .profile-image {
             width: 100%;
             height: 100%;
@@ -205,12 +212,12 @@
 
             <form action="${pageContext.request.contextPath}/updateUser" method="post" enctype="multipart/form-data" id="editProfileForm">
                 <div class="profile-image-container">
-                    <% if (user.getProfilePicture() != null) { %>
-                    <img src="<%= request.getContextPath() %>/getProfilePicture?userId=<%= user.getUserId() %>&t=<%= cacheBuster %>" alt="Profile Image" class="profile-image" id="profileImage">
+                    <% if (user != null && user.getProfilePicture() != null && user.getProfilePicture().length > 0) { %>
+                    <img src='${pageContext.request.contextPath}/ProfileImageServlet?userId=<%= user.getUserId() %>' alt='Profile Image' />
+                    <% } else if (user != null) { %>
+                    <%= user.getName().charAt(0) %>
                     <% } else { %>
-                    <div class="profile-image-fallback" id="profileImageFallback">
-                        <%= user.getName() != null && !user.getName().isEmpty() ? user.getName().charAt(0) : "?" %>
-                    </div>
+                    G
                     <% } %>
                 </div>
 

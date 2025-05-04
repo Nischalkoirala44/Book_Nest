@@ -1,6 +1,8 @@
-<%@ page import="java.util.Objects" %>
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<html>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ page import="dao.BookDAO,model.Book,model.User,java.util.List,java.util.Objects" %>
+
+<!DOCTYPE html>
+<html lang="en">
 <head>
     <title>My Books - Book Hive</title>
     <style>
@@ -603,34 +605,30 @@
         <div class="logo">
             <h1><span>Book</span> Nest</h1>
         </div>
-        <button class="hamburger" aria-label="Toggle navigation menu" aria-expanded="false">☰</button>
+        <button class="hamburger" aria-label="Toggle navigation" aria-expanded="false">☰</button>
         <ul class="nav-links">
             <li><a href="home.jsp">Home</a></li>
             <li><a href="browse.jsp">Browse</a></li>
-            <li><a href="my-Books.jsp" class="active" aria-current="page">My Books</a></li>
+            <li><a href="my-Books.jsp" class="active">My Books</a></li>
         </ul>
         <div class="user-actions">
             <div class="user-profile" id="userProfileToggle" aria-haspopup="true" aria-expanded="false">
-                <% model.User user = (model.User) session.getAttribute("user"); %>
-                <% if (user != null) { %>
+                <% User user = (User) session.getAttribute("user"); %>
                 <div class="user-avatar">
-                    <%= user.getProfilePicture() != null
-                            ? "<img src='profilePicture?userId=" + user.getUserId() + "' alt='Profile Image' />"
-                            : user.getName().charAt(0)
-                    %>
+                    <% if (user != null && user.getProfilePicture() != null && user.getProfilePicture().length > 0) { %>
+                    <img src='${pageContext.request.contextPath}/ProfileImageServlet?userId=<%= user.getUserId() %>' alt='Profile Image' />
+                    <% } else if (user != null) { %>
+                    <%= user.getName().charAt(0) %>
+                    <% } else { %>
+                    G
+                    <% } %>
                 </div>
-                <div class="user-name"><%= user.getName() %></div>
-                <% } else { %>
-                <div class="user-avatar">G</div>
-                <div class="user-name">Guest</div>
-                <% } %>
+                <div class="user-name"><%= user != null && user.getName() != null ? user.getName() : "Guest" %></div>
                 <div class="dropdown-menu" id="userDropdown">
                     <ul>
                         <li><a href="#" id="viewProfileBtn">View Profile</a></li>
-                        <li><a href="#">My Books</a></li>
-                        <% if (user != null) { %>
+                        <li><a href="my-Books.jsp">My Books</a></li>
                         <li class="logout"><a href="${pageContext.request.contextPath}/logout">Logout</a></li>
-                        <% } %>
                     </ul>
                 </div>
             </div>
@@ -712,34 +710,37 @@
 <div class="modal" id="profileModal" role="dialog" aria-modal="true">
     <div class="modal-content">
         <div class="modal-header">
-            <h2>Profile</h2>
-            <button class="modal-close">×</button>
+            <h2 class="modal-title">Profile</h2>
+            <button class="modal-close" aria-label="Close profile modal">×</button>
         </div>
         <div class="modal-body">
             <div class="profile-details">
                 <% if (user != null) { %>
                 <div class="profile-avatar">
-                    <%= user.getProfilePicture() != null
-                            ? "<img src='profilePicture?userId=" + user.getUserId() + "' alt='Profile Image' />"
-                            : user.getName().charAt(0)
-                    %>
+                    <% if (user != null && user.getProfilePicture() != null && user.getProfilePicture().length > 0) { %>
+                    <img src='${pageContext.request.contextPath}/ProfileImageServlet?userId=<%= user.getUserId() %>' alt='Profile Image' />
+                    <% } else if (user != null) { %>
+                    <%= user.getName().charAt(0) %>
+                    <% } else { %>
+                    G
+                    <% } %>
                 </div>
                 <div class="profile-info">
                     <div class="profile-info-item">
                         <div class="profile-info-label">Name</div>
-                        <div class="profile-info-value"><%= user.getName() %></div>
+                        <div class="profile-info-value"><%= user.getName() != null ? user.getName().replaceAll("[<>\"&]", "") : "N/A" %></div>
                     </div>
                     <div class="profile-info-item">
                         <div class="profile-info-label">Email</div>
-                        <div class="profile-info-value"><%= user.getEmail() %></div>
+                        <div class="profile-info-value"><%= user.getEmail() != null ? user.getEmail().replaceAll("[<>\"&]", "") : "N/A" %></div>
                     </div>
                     <div class="profile-info-item">
                         <div class="profile-info-label">Bio</div>
-                        <div class="profile-info-value"><%= Objects.toString(user.getBio(), "No bio provided") %></div>
+                        <div class="profile-info-value"><%= user.getBio() != null ? user.getBio().replaceAll("[<>\"&]", "") : "No bio provided" %></div>
                     </div>
                     <div class="profile-info-item">
                         <div class="profile-info-label">Address</div>
-                        <div class="profile-info-value"><%= Objects.toString(user.getAddress(), "No address provided") %></div>
+                        <div class="profile-info-value"><%= user.getAddress() != null ? user.getAddress().replaceAll("[<>\"&]", "") : "No address provided" %></div>
                     </div>
                 </div>
                 <% } else { %>

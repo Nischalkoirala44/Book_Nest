@@ -151,6 +151,14 @@
         .sidebar .active {
             background-color: rgba(255, 255, 255, 0.2);
         }
+
+        /* Added styles for table images */
+        td img {
+            max-width: 100px;
+            max-height: 100px;
+            object-fit: cover;
+            border-radius: 8px;
+        }
     </style>
 </head>
 <body>
@@ -202,7 +210,7 @@
                 for (Book book : books) {
         %>
         <tr>
-            <td><img src="BookImageServlet?bookId=<%= book.getBookId() %>"></td>
+            <td><img src="${pageContext.request.contextPath}/BookImageServlet?bookId=<%= book.getBookId() %>" alt="<%= book.getTitle() %>"></td>
             <td><%= book.getTitle() %></td>
             <td><%= book.getAuthor() %></td>
             <td>Programming</td>
@@ -214,7 +222,7 @@
             </td>
         </tr>
         <%
-            }
+                }
             } catch (Exception e) {
                 out.println("Error: " + e.getMessage());
             }

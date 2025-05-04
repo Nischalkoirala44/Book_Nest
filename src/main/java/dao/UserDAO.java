@@ -16,8 +16,6 @@ public class UserDAO {
             "SELECT userId, name, email, password, role, profile_picture, bio, address FROM users WHERE email = ?";
     private static final String SELECT_USER_BY_ID =
             "SELECT userId, name, email, password, role, profile_picture, bio, address FROM users WHERE userId = ?";
-    private static final String UPDATE_USER =
-            "UPDATE users SET name=?, email=?, password=?, profile_picture=?, bio=?, address=? WHERE userId=?";
 
     private  static final String SELECT_USER =
             "SELECT * FROM users";
@@ -43,7 +41,6 @@ public class UserDAO {
                 }
             }
         } catch (SQLException e) {
-            System.out.println(e.getMessage());
             throw new RuntimeException("Database error during registration", e);
         } catch (Exception e) {
             throw new RuntimeException("Encryption error", e);
@@ -135,4 +132,22 @@ public class UserDAO {
         return users;
     }
 
+    public byte[] getProfilePicture(int userId) throws  SQLException{
+        try (Connection conn = DBConnection.getDbConnection();
+             PreparedStatement ps = conn.prepareStatement(SELECT_USER_BY_ID)) {
+            ps.setInt(1, userId);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    java.sql.Blob blob = rs.getBlob("profile_picture");
+                    if (blob != null) {
+                        System.out.println("blob exists: " + blob.length() + " bytes long.");
+                        return blob.getBytes(1, (int) blob.length());
+                    }
+                }
+                return null;
+            }
+        } catch (SQLException e) {
+            throw new SQLException("Error fetching profile picture: " + e.getMessage(), e);
+        }
+    }
 }

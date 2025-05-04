@@ -1,8 +1,12 @@
-<%@ page import="java.util.Objects" %>
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<html>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ page import="dao.BookDAO,model.Book,model.User,java.util.List,java.util.Objects" %>
+
+<!DOCTYPE html>
+<html lang="en">
 <head>
-    <title>Book Hive</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book Nest</title>
     <style>
         * {
             margin: 0;
@@ -20,7 +24,7 @@
             --border-color: #ddd;
             --status-available-bg: hsl(8, 100%, 95%);
             --status-available-text: hsl(8, 80%, 40%);
-            --status-borrowed-bg: hsl(8, 20%, 95%);
+            --status Lilly-bg: hsl(8, 20%, 95%);
             --status-borrowed-text: hsl(8, 80%, 50%);
         }
 
@@ -661,24 +665,25 @@
         <div class="logo">
             <h1><span>Book</span> Nest</h1>
         </div>
+        <button class="hamburger" aria-label="Toggle navigation" aria-expanded="false">☰</button>
         <ul class="nav-links">
-            <li><a href="home.jsp" >Home</a></li>
-            <li><a href="#" class="active">Browse</a></li>
+            <li><a href="home.jsp">Home</a></li>
+            <li><a href="browse.jsp" class="active">Browse</a></li>
             <li><a href="my-Books.jsp">My Books</a></li>
         </ul>
         <div class="user-actions">
             <div class="user-profile" id="userProfileToggle" aria-haspopup="true" aria-expanded="false">
-                <% model.User user = (model.User) session.getAttribute("user"); %>
+                <% User user = (User) session.getAttribute("user"); %>
                 <div class="user-avatar">
                     <% if (user != null && user.getProfilePicture() != null && user.getProfilePicture().length > 0) { %>
-                    <img src='=<%= user.getUserId() %>' alt='Profile Image' />
+                    <img src='${pageContext.request.contextPath}/ProfileImageServlet?userId=<%= user.getUserId() %>' alt='Profile Image' />
                     <% } else if (user != null) { %>
                     <%= user.getName().charAt(0) %>
                     <% } else { %>
                     G
                     <% } %>
                 </div>
-                <div class="user-name"><%= user != null ? user.getName() : "Guest" %></div>
+                <div class="user-name"><%= user != null && user.getName() != null ? user.getName() : "Guest" %></div>
                 <div class="dropdown-menu" id="userDropdown">
                     <ul>
                         <li><a href="#" id="viewProfileBtn">View Profile</a></li>
@@ -702,7 +707,9 @@
         <!-- Search and Filter -->
         <div class="search-filter-container">
             <div class="search-bar">
-                <input type="text" class="search-input" id="searchInput" placeholder="Search by title, author, or ISBN...">
+                <input type="text" class="search-input" id="searchInput"
+                       placeholder="Search by title, author, or category..."
+                       value="<%= request.getParameter("searchTerm") != null ? request.getParameter("searchTerm").replaceAll("[<>\"&]", "") : "" %>">
                 <button class="search-btn" id="searchBtn">Search</button>
             </div>
             <div class="filters">
@@ -710,36 +717,36 @@
                     <label for="categoryFilter">Category</label>
                     <select id="categoryFilter">
                         <option value="">All Categories</option>
-                        <option value="fiction">Fiction</option>
-                        <option value="non-fiction">Non-Fiction</option>
-                        <option value="science">Science</option>
-                        <option value="history">History</option>
-                        <option value="biography">Biography</option>
-                        <option value="self-help">Self-Help</option>
-                        <option value="fantasy">Fantasy</option>
-                        <option value="mystery">Mystery</option>
-                        <option value="romance">Romance</option>
-                        <option value="science-fiction">Science Fiction</option>
-                        <option value="academic">Academic</option>
+                        <option value="fiction" <%= "fiction".equals(request.getParameter("category")) ? "selected" : "" %>>Fiction</option>
+                        <option value="non-fiction" <%= "non-fiction".equals(request.getParameter("category")) ? "selected" : "" %>>Non-Fiction</option>
+                        <option value="science" <%= "science".equals(request.getParameter("category")) ? "selected" : "" %>>Science</option>
+                        <option value="history" <%= "history".equals(request.getParameter("category")) ? "selected" : "" %>>History</option>
+                        <option value="biography" <%= "biography".equals(request.getParameter("category")) ? "selected" : "" %>>Biography</option>
+                        <option value="self-help" <%= "self-help".equals(request.getParameter("category")) ? "selected" : "" %>>Self-Help</option>
+                        <option value="fantasy" <%= "fantasy".equals(request.getParameter("category")) ? "selected" : "" %>>Fantasy</option>
+                        <option value="mystery" <%= "mystery".equals(request.getParameter("category")) ? "selected" : "" %>>Mystery</option>
+                        <option value="romance" <%= "romance".equals(request.getParameter("category")) ? "selected" : "" %>>Romance</option>
+                        <option value="science-fiction" <%= "science-fiction".equals(request.getParameter("category")) ? "selected" : "" %>>Science Fiction</option>
+                        <option value="academic" <%= "academic".equals(request.getParameter("category")) ? "selected" : "" %>>Academic</option>
                     </select>
                 </div>
                 <div class="filter-group">
                     <label for="availabilityFilter">Availability</label>
                     <select id="availabilityFilter">
                         <option value="">All</option>
-                        <option value="available">Available</option>
-                        <option value="borrowed">Borrowed</option>
+                        <option value="available" <%= "available".equals(request.getParameter("availability")) ? "selected" : "" %>>Available</option>
+                        <option value="borrowed" <%= "borrowed".equals(request.getParameter("availability")) ? "selected" : "" %>>Borrowed</option>
                     </select>
                 </div>
                 <div class="filter-group">
                     <label for="sortFilter">Sort By</label>
                     <select id="sortFilter">
-                        <option value="title-asc">Title A-Z</option>
-                        <option value="title-desc">Title Z-A</option>
-                        <option value="author-asc">Author A-Z</option>
-                        <option value="author-desc">Author Z-A</option>
-                        <option value="popularity">Popularity</option>
-                        <option value="newest">Newest First</option>
+                        <option value="title-asc" <%= "title-asc".equals(request.getParameter("sort")) ? "selected" : "" %>>Title A-Z</option>
+                        <option value="title-desc" <%= "title-desc".equals(request.getParameter("sort")) ? "selected" : "" %>>Title Z-A</option>
+                        <option value="author-asc" <%= "author-asc".equals(request.getParameter("sort")) ? "selected" : "" %>>Author A-Z</option>
+                        <option value="author-desc" <%= "author-desc".equals(request.getParameter("sort")) ? "selected" : "" %>>Author Z-A</option>
+                        <option value="popularity" <%= "popularity".equals(request.getParameter("sort")) ? "selected" : "" %>>Popularity</option>
+                        <option value="newest" <%= "newest".equals(request.getParameter("sort")) ? "selected" : "" %>>Newest First</option>
                     </select>
                 </div>
             </div>
@@ -747,12 +754,57 @@
 
         <!-- Books Grid -->
         <div class="books-grid" id="booksGrid">
-            <!-- Books will be dynamically loaded here -->
+            <%
+                List<Book> books = (List<Book>) request.getAttribute("books");
+                if (books == null || books.isEmpty()) {
+                    BookDAO bookDAO = new BookDAO();
+                    try {
+                        books = bookDAO.getAllBooks();
+                    } catch (Exception e) {
+                        out.println("Error: " + e.getMessage().replaceAll("[<>\"&]", ""));
+                    }
+                }
+                if (books != null) {
+                    for (Book book : books) {
+                        if (book != null) {
+                            String title = book.getTitle() != null ? book.getTitle().replaceAll("[<>\"&]", "") : "Untitled";
+                            String author = book.getAuthor() != null ? book.getAuthor().replaceAll("[<>\"&]", "") : "Unknown";
+                            String category = book.getCategory() != null ? book.getCategory().replaceAll("[<>\"&]", "") : "Uncategorized";
+                            boolean isAvailable = book.getTotalCopies() > 0;
+            %>
+            <div class="book-card">
+                <div class="book-cover">
+                    <img src="${pageContext.request.contextPath}/BookImageServlet?bookId=<%= book.getBookId() %>" alt="<%= title %>">
+                </div>
+                <div class="book-info">
+                    <span class="category"><%= category %></span>
+                    <h3><%= title %></h3>
+                    <p>Author: <%= author %></p>
+                    <div class="status">
+                        <span class="status-badge <%= isAvailable ? "available" : "borrowed" %>">
+                            <%= isAvailable ? "Available" : "Borrowed" %>
+                        </span>
+                        <a href="#" class="borrow-btn <%= isAvailable ? "" : "disabled-btn" %>"
+                           data-id="<%= book.getBookId() %>">
+                            <%= isAvailable ? "Borrow" : "Unavailable" %>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <%
+                    }
+                }
+            } else {
+            %>
+            <p>No books found.</p>
+            <%
+                }
+            %>
         </div>
 
         <!-- Pagination -->
         <div class="pagination" id="pagination">
-            <!-- Pagination buttons will be dynamically generated -->
+
         </div>
     </div>
 </div>
@@ -799,7 +851,7 @@
             </div>
         </div>
         <div class="footer-bottom">
-            <p>© 2025 My Book Shelf. All rights reserved.</p>
+            <p>© 2025 Book Nest. All rights reserved.</p>
         </div>
     </div>
 </footer>
@@ -808,34 +860,37 @@
 <div class="modal" id="profileModal" role="dialog" aria-modal="true">
     <div class="modal-content">
         <div class="modal-header">
-            <h2>Profile</h2>
-            <button class="modal-close">×</button>
+            <h2 class="modal-title">Profile</h2>
+            <button class="modal-close" aria-label="Close profile modal">×</button>
         </div>
         <div class="modal-body">
             <div class="profile-details">
                 <% if (user != null) { %>
                 <div class="profile-avatar">
-                    <%= user.getProfilePicture() != null
-                            ? "<img src='profilePicture?userId=" + user.getUserId() + "' alt='Profile Image' />"
-                            : user.getName().charAt(0)
-                    %>
+                    <% if (user != null && user.getProfilePicture() != null && user.getProfilePicture().length > 0) { %>
+                    <img src='${pageContext.request.contextPath}/ProfileImageServlet?userId=<%= user.getUserId() %>' alt='Profile Image' />
+                    <% } else if (user != null) { %>
+                    <%= user.getName().charAt(0) %>
+                    <% } else { %>
+                    G
+                    <% } %>
                 </div>
                 <div class="profile-info">
                     <div class="profile-info-item">
                         <div class="profile-info-label">Name</div>
-                        <div class="profile-info-value"><%= user.getName() %></div>
+                        <div class="profile-info-value"><%= user.getName() != null ? user.getName().replaceAll("[<>\"&]", "") : "N/A" %></div>
                     </div>
                     <div class="profile-info-item">
                         <div class="profile-info-label">Email</div>
-                        <div class="profile-info-value"><%= user.getEmail() %></div>
+                        <div class="profile-info-value"><%= user.getEmail() != null ? user.getEmail().replaceAll("[<>\"&]", "") : "N/A" %></div>
                     </div>
                     <div class="profile-info-item">
                         <div class="profile-info-label">Bio</div>
-                        <div class="profile-info-value"><%= Objects.toString(user.getBio(), "No bio provided") %></div>
+                        <div class="profile-info-value"><%= user.getBio() != null ? user.getBio().replaceAll("[<>\"&]", "") : "No bio provided" %></div>
                     </div>
                     <div class="profile-info-item">
                         <div class="profile-info-label">Address</div>
-                        <div class="profile-info-value"><%= Objects.toString(user.getAddress(), "No address provided") %></div>
+                        <div class="profile-info-value"><%= user.getAddress() != null ? user.getAddress().replaceAll("[<>\"&]", "") : "No address provided" %></div>
                     </div>
                 </div>
                 <% } else { %>
@@ -897,7 +952,7 @@
     // Modal Functionality
     const profileModal = document.getElementById('profileModal');
     const viewProfileBtn = document.getElementById('viewProfileBtn');
-    const modalCloseBtn = document.querySelectorAll('.modal-close, .modal-close-btn');
+    const modalCloseBtns = document.querySelectorAll('.modal-close, .modal-close-btn');
 
     if (viewProfileBtn) {
         viewProfileBtn.addEventListener('click', function(e) {
@@ -919,322 +974,64 @@
         }
     });
 
-    // Mock book data
-    const books = [
-        {
-            id: 1,
-            title: "The Silent Echo",
-            author: "Jane Doe",
-            category: "fiction",
-            coverImage: "../assets/silentEcho.jpeg",
-            available: true
-        },
-        {
-            id: 2,
-            title: "Cosmic Horizons",
-            author: "John Smith",
-            category: "science",
-            coverImage: "../assets/cosmicHorizons.jpg",
-            available: true
-        },
-        {
-            id: 3,
-            title: "Ancient Civilizations",
-            author: "Robert Johnson",
-            category: "history",
-            coverImage: "../assets/ancientCivilization.jpg",
-            available: false
-        },
-        {
-            id: 4,
-            title: "The Power of Habits",
-            author: "Emily Wilson",
-            category: "self-help",
-            coverImage: "../assets/thehabit.jpeg",
-            available: true
-        },
-        {
-            id: 5,
-            title: "Mystery of the Lost Island",
-            author: "David Brown",
-            category: "mystery",
-            coverImage: "/api/placeholder/250/350",
-            available: true
-        },
-        {
-            id: 6,
-            title: "Stars Beyond Reach",
-            author: "Sarah Miller",
-            category: "science-fiction",
-            coverImage: "/api/placeholder/250/350",
-            available: false
-        },
-        {
-            id: 7,
-            title: "The Art of Business",
-            author: "Michael Richards",
-            category: "non-fiction",
-            coverImage: "/api/placeholder/250/350",
-            available: true
-        },
-        {
-            id: 8,
-            title: "The Last Kingdom",
-            author: "Peter Williams",
-            category: "fantasy",
-            coverImage: "/api/placeholder/250/350",
-            available: true
-        },
-        {
-            id: 9,
-            title: "Love in Paris",
-            author: "Sophie Martin",
-            category: "romance",
-            coverImage: "/api/placeholder/250/350",
-            available: false
-        },
-        {
-            id: 10,
-            title: "Physics Fundamentals",
-            author: "Dr. Alan Cooper",
-            category: "academic",
-            coverImage: "/api/placeholder/250/350",
-            available: true
-        },
-        {
-            id: 11,
-            title: "The Secret Garden",
-            author: "Frances Hodgson Burnett",
-            category: "fiction",
-            coverImage: "/api/placeholder/250/350",
-            available: true
-        },
-        {
-            id: 12,
-            title: "The Universe Within",
-            author: "Neil Thompson",
-            category: "science",
-            coverImage: "/api/placeholder/250/350",
-            available: true
-        }
-    ];
-
-    // Pagination settings
-    const booksPerPage = 5;
-    let currentPage = 1;
-
-    // Function to display books for the current page
-    function displayBooks(booksArray) {
-        const booksGrid = document.getElementById('booksGrid');
-
-        // Clear previous content
-        while (booksGrid.firstChild) {
-            booksGrid.removeChild(booksGrid.firstChild);
-        }
-
-        if (booksArray.length === 0) {
-            const noBooksMessage = document.createElement('p');
-            noBooksMessage.textContent = 'No books found matching your criteria.';
-            booksGrid.appendChild(noBooksMessage);
-            return;
-        }
-
-        const startIndex = (currentPage - 1) * booksPerPage;
-        const endIndex = startIndex + booksPerPage;
-        const booksToDisplay = booksArray.slice(startIndex, endIndex);
-
-        booksToDisplay.forEach(book => {
-            console.log("Book Object:", book);
-            console.log("Book Author:", book.author);
-            console.log("Book Title:", book.title);
-
-            // Create book card
-            const bookCard = document.createElement('div');
-            bookCard.className = 'book-card';
-
-            // Book cover
-            const bookCover = document.createElement('div');
-            bookCover.className = 'book-cover';
-            const coverImg = document.createElement('img');
-            coverImg.src = book.coverImage;
-            coverImg.alt = `${book.title} Cover`;
-            bookCover.appendChild(coverImg);
-
-            // Book info
-            const bookInfo = document.createElement('div');
-            bookInfo.className = 'book-info';
-
-            // Category
-            const category = document.createElement('span');
-            category.className = 'category';
-            category.textContent = book.category.charAt(0).toUpperCase() + book.category.slice(1);
-            bookInfo.appendChild(category);
-
-            // Title
-            const title = document.createElement('h3');
-            title.textContent = book.title;
-            bookInfo.appendChild(title);
-
-            // Author
-            const author = document.createElement('p');
-            author.textContent = `Author: ${book.author || "Unknown Author"}`;
-            bookInfo.appendChild(author);
-
-            // Status
-            const statusDiv = document.createElement('div');
-            statusDiv.className = 'status';
-
-            // Status badge
-            const statusBadge = document.createElement('span');
-            statusBadge.className = 'status-badge';
-            if (book.available) {
-                statusBadge.classList.add('available');
-                statusBadge.textContent = 'Available';
-            } else {
-                statusBadge.classList.add('borrowed');
-                statusBadge.textContent = 'Borrowed';
-            }
-            statusDiv.appendChild(statusBadge);
-
-            // Borrow button
-            const borrowBtn = document.createElement('a');
-            borrowBtn.href = '#';
-            borrowBtn.className = 'borrow-btn';
-            if (book.available) {
-                borrowBtn.textContent = 'Borrow';
-                borrowBtn.dataset.id = book.id;
-            } else {
-                borrowBtn.classList.add('disabled-btn');
-                borrowBtn.textContent = 'Unavailable';
-            }
-            statusDiv.appendChild(borrowBtn);
-
-            // Assemble the book card
-            bookInfo.appendChild(statusDiv);
-            bookCard.appendChild(bookCover);
-            bookCard.appendChild(bookInfo);
-            booksGrid.appendChild(bookCard);
-        });
-
-        // Add event listeners to borrow buttons
-        document.querySelectorAll('.borrow-btn:not(.disabled-btn)').forEach(btn => {
-            btn.addEventListener('click', function(e) {
-                e.preventDefault();
-                const bookId = this.dataset.id;
-                borrowBook(bookId);
-            });
-        });
-
-        // Update pagination
-        updatePagination(booksArray);
-    }
-
-    // Function to update pagination
-    function updatePagination(booksArray) {
-        const pagination = document.getElementById('pagination');
-        pagination.innerHTML = '';
-
-        const totalPages = Math.ceil(booksArray.length / booksPerPage);
-
-        for (let i = 1; i <= totalPages; i++) {
-            const btn = document.createElement('a');
-            btn.href = '#';
-            btn.className = 'pagination-btn';
-            btn.textContent = i;
-            btn.setAttribute('aria-label', `Go to page ${i}`);
-            if (i === currentPage) {
-                btn.classList.add('active');
-            }
-            btn.addEventListener('click', (e) => {
-                e.preventDefault();
-                currentPage = i;
-                displayBooks(getFilteredBooks());
-                document.querySelectorAll('.pagination-btn').forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-            });
-            pagination.appendChild(btn);
-        }
-    }
-
-    // Function to filter books
-    function getFilteredBooks() {
-        const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-        const category = document.getElementById('categoryFilter').value;
-        const availability = document.getElementById('availabilityFilter').value;
-
-        let filteredBooks = books.filter(book => {
-            const matchesSearchTerm = searchTerm === '' ||
-                book.title.toLowerCase().includes(searchTerm) ||
-                book.author.toLowerCase().includes(searchTerm);
-
-            const matchesCategory = category === '' || book.category === category;
-
-            let matchesAvailability = true;
-            if (availability === 'available') {
-                matchesAvailability = book.available;
-            } else if (availability === 'borrowed') {
-                matchesAvailability = !book.available;
-            }
-
-            return matchesSearchTerm && matchesCategory && matchesAvailability;
-        });
-
-        const sortOption = document.getElementById('sortFilter').value;
-        sortBooks(filteredBooks, sortOption);
-
-        return filteredBooks;
-    }
-
-    function filterBooks() {
-        currentPage = 1; // Reset to first page on new filter
-        const filteredBooks = getFilteredBooks();
-        displayBooks(filteredBooks);
-    }
-
-    // Function to sort books
-    function sortBooks(booksArray, sortOption) {
-        switch(sortOption) {
-            case 'title-asc':
-                booksArray.sort((a, b) => a.title.localeCompare(b.title));
-                break;
-            case 'title-desc':
-                booksArray.sort((a, b) => b.title.localeCompare(a.title));
-                break;
-            case 'author-asc':
-                booksArray.sort((a, b) => a.author.localeCompare(b.author));
-                break;
-            case 'author-desc':
-                booksArray.sort((a, b) => b.author.localeCompare(a.author));
-                break;
-            case 'popularity':
-            case 'newest':
-                booksArray.sort((a, b) => b.id - a.id);
-                break;
-        }
-    }
-
-    // Function to borrow a book
-    function borrowBook(bookId) {
-        alert(`You have borrowed the book with ID: ${bookId}. It will be added to your 'My Books' section.`);
-        const book = books.find(b => b.id == bookId);
-        if (book) {
-            book.available = false;
-            filterBooks();
-        }
+    // Function to handle search
+    function searchBooks() {
+        const searchTerm = encodeURIComponent(document.getElementById('searchInput').value.trim());
+        const category = encodeURIComponent(document.getElementById('categoryFilter').value);
+        const availability = encodeURIComponent(document.getElementById('availabilityFilter').value);
+        const sort = encodeURIComponent(document.getElementById('sortFilter').value);
+        const contextPath = '<%= request.getContextPath() %>';
+        const url = `${contextPath}/searchBook?searchTerm=${searchTerm}&searchType=all&category=${category}&availability=${availability}&sort=${sort}`;
+        window.location.href = url;
     }
 
     // Initialize page
     document.addEventListener('DOMContentLoaded', function() {
-        displayBooks(books);
-        document.getElementById('searchBtn').addEventListener('click', filterBooks);
-        document.getElementById('searchInput').addEventListener('keyup', function(e) {
-            if (e.key === 'Enter') {
-                filterBooks();
-            }
+        const searchBtn = document.getElementById('searchBtn');
+        if (searchBtn) {
+            searchBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                searchBooks();
+            });
+        }
+
+        const searchInput = document.getElementById('searchInput');
+        if (searchInput) {
+            searchInput.addEventListener('keyup', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    searchBooks();
+                }
+            });
+        }
+
+        const categoryFilter = document.getElementById('categoryFilter');
+        if (categoryFilter) {
+            categoryFilter.addEventListener('change', searchBooks);
+        }
+
+        const availabilityFilter = document.getElementById('availabilityFilter');
+        if (availabilityFilter) {
+            availabilityFilter.addEventListener('change', searchBooks);
+        }
+
+        const sortFilter = document.getElementById('sortFilter');
+        if (sortFilter) {
+            sortFilter.addEventListener('change', searchBooks);
+        }
+
+        // Handle borrow button clicks
+        const borrowButtons = document.querySelectorAll('.borrow-btn');
+        borrowButtons.forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                e.preventDefault();
+                if (!this.classList.contains('disabled-btn')) {
+                    const bookId = this.getAttribute('data-id');
+                    const contextPath = '<%= request.getContextPath() %>';
+                    window.location.href = `${contextPath}/borrowBook?bookId=${bookId}`;
+                }
+            });
         });
-        document.getElementById('categoryFilter').addEventListener('change', filterBooks);
-        document.getElementById('availabilityFilter').addEventListener('change', filterBooks);
-        document.getElementById('sortFilter').addEventListener('change', filterBooks);
     });
 </script>
 </body>

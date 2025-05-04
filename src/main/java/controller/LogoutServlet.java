@@ -17,7 +17,6 @@ public class LogoutServlet extends HttpServlet {
             session.invalidate();
         }
 
-        // Clear "Remember Me" cookie
         Cookie rememberMeCookie = new Cookie("rememberMe", "");
         rememberMeCookie.setMaxAge(0);
         rememberMeCookie.setPath("/");

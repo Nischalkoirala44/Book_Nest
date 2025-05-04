@@ -24,11 +24,8 @@ public class ViewBookServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        System.err.println("ViewBookServlet: Processing GET request");
         try {
             List<Book> books = bookDAO.getAllBooks();
-            System.err.println("Books retrieved: " + books.size());
-            System.out.println("Number of books retrieved: " + books.size());
             for (Book book : books) {
                 System.err.println("Book: ID=" + book.getBookId() + ", Title=" + book.getTitle());
             }
