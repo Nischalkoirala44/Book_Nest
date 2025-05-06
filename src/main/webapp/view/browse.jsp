@@ -528,6 +528,26 @@
             transition: all 0.3s;
         }
 
+        .borrow-btn {
+            background: none;
+            border: none;
+            color: #007bff; /* or your link color */
+            cursor: pointer;
+            text-decoration: underline;
+            padding: 0;
+            font: inherit;
+        }
+
+        .borrow-btn:hover {
+            color: #0056b3; /* darker shade for hover */
+        }
+
+        .disabled-btn {
+            color: #6c757d;
+            cursor: not-allowed;
+            text-decoration: none;
+        }
+
         .pagination-btn:hover {
             background-color: var(--secondary-color);
         }
@@ -656,6 +676,195 @@
             color: var(--light-text);
             font-size: 14px;
         }
+
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s, visibility 0.3s;
+        }
+
+        .modal.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-content {
+            background-color: white;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .modal-header {
+            padding: 15px 20px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-title {
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: var(--light-text);
+        }
+
+        .modal-body {
+            padding: 20px;
+        }
+
+        .modal-footer {
+            padding: 15px 20px;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .modal-footer button {
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-left: 10px;
+        }
+
+        .modal-footer button a {
+            text-decoration: none;
+            color: white;
+        }
+
+        .btn-secondary {
+            background-color: #f0f0f0;
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+        }
+
+        .profile-details {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 15px;
+        }
+
+        .profile-avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background-color: var(--primary-color);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 36px;
+            font-weight: bold;
+            margin: 0 auto;
+            overflow: hidden;
+        }
+
+        .profile-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 50%;
+        }
+
+        .profile-info {
+            margin-top: 20px;
+        }
+
+        .profile-info-item {
+            margin-bottom: 15px;
+        }
+
+        .profile-info-label {
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: var(--light-text);
+            font-size: 14px;
+        }
+
+        .profile-info-value {
+            font-size: 16px;
+        }
+
+        .main-content {
+            padding: 40px 0;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+                flex-direction: column;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                width: 100%;
+                background-color: white;
+                padding: 20px;
+                box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            }
+
+            .nav-links.active {
+                display: flex;
+            }
+
+            .nav-links li {
+                margin: 10px 0;
+            }
+
+            .hamburger {
+                display: block;
+            }
+
+            .profile-details {
+                grid-template-columns: 1fr;
+            }
+
+            .dropdown-menu {
+                width: 150px;
+            }
+
+            .books-grid {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            }
+
+            .book-cover {
+                height: 200px;
+            }
+        }
+
+
     </style>
 </head>
 <body>
@@ -669,7 +878,7 @@
         <ul class="nav-links">
             <li><a href="home.jsp">Home</a></li>
             <li><a href="browse.jsp" class="active">Browse</a></li>
-            <li><a href="my-Books.jsp">My Books</a></li>
+            <li><a href="view-Borrowed.jsp">My Books</a></li>
         </ul>
         <div class="user-actions">
             <div class="user-profile" id="userProfileToggle" aria-haspopup="true" aria-expanded="false">
@@ -687,7 +896,7 @@
                 <div class="dropdown-menu" id="userDropdown">
                     <ul>
                         <li><a href="#" id="viewProfileBtn">View Profile</a></li>
-                        <li><a href="my-Books.jsp">My Books</a></li>
+                        <li><a href="view-Borrowed.jsp">My Books</a></li>
                         <li class="logout"><a href="${pageContext.request.contextPath}/logout">Logout</a></li>
                     </ul>
                 </div>
@@ -704,53 +913,7 @@
             <p>Browse through our collection of books</p>
         </div>
 
-        <!-- Search and Filter -->
-        <div class="search-filter-container">
-            <div class="search-bar">
-                <input type="text" class="search-input" id="searchInput"
-                       placeholder="Search by title, author, or category..."
-                       value="<%= request.getParameter("searchTerm") != null ? request.getParameter("searchTerm").replaceAll("[<>\"&]", "") : "" %>">
-                <button class="search-btn" id="searchBtn">Search</button>
-            </div>
-            <div class="filters">
-                <div class="filter-group">
-                    <label for="categoryFilter">Category</label>
-                    <select id="categoryFilter">
-                        <option value="">All Categories</option>
-                        <option value="fiction" <%= "fiction".equals(request.getParameter("category")) ? "selected" : "" %>>Fiction</option>
-                        <option value="non-fiction" <%= "non-fiction".equals(request.getParameter("category")) ? "selected" : "" %>>Non-Fiction</option>
-                        <option value="science" <%= "science".equals(request.getParameter("category")) ? "selected" : "" %>>Science</option>
-                        <option value="history" <%= "history".equals(request.getParameter("category")) ? "selected" : "" %>>History</option>
-                        <option value="biography" <%= "biography".equals(request.getParameter("category")) ? "selected" : "" %>>Biography</option>
-                        <option value="self-help" <%= "self-help".equals(request.getParameter("category")) ? "selected" : "" %>>Self-Help</option>
-                        <option value="fantasy" <%= "fantasy".equals(request.getParameter("category")) ? "selected" : "" %>>Fantasy</option>
-                        <option value="mystery" <%= "mystery".equals(request.getParameter("category")) ? "selected" : "" %>>Mystery</option>
-                        <option value="romance" <%= "romance".equals(request.getParameter("category")) ? "selected" : "" %>>Romance</option>
-                        <option value="science-fiction" <%= "science-fiction".equals(request.getParameter("category")) ? "selected" : "" %>>Science Fiction</option>
-                        <option value="academic" <%= "academic".equals(request.getParameter("category")) ? "selected" : "" %>>Academic</option>
-                    </select>
-                </div>
-                <div class="filter-group">
-                    <label for="availabilityFilter">Availability</label>
-                    <select id="availabilityFilter">
-                        <option value="">All</option>
-                        <option value="available" <%= "available".equals(request.getParameter("availability")) ? "selected" : "" %>>Available</option>
-                        <option value="borrowed" <%= "borrowed".equals(request.getParameter("availability")) ? "selected" : "" %>>Borrowed</option>
-                    </select>
-                </div>
-                <div class="filter-group">
-                    <label for="sortFilter">Sort By</label>
-                    <select id="sortFilter">
-                        <option value="title-asc" <%= "title-asc".equals(request.getParameter("sort")) ? "selected" : "" %>>Title A-Z</option>
-                        <option value="title-desc" <%= "title-desc".equals(request.getParameter("sort")) ? "selected" : "" %>>Title Z-A</option>
-                        <option value="author-asc" <%= "author-asc".equals(request.getParameter("sort")) ? "selected" : "" %>>Author A-Z</option>
-                        <option value="author-desc" <%= "author-desc".equals(request.getParameter("sort")) ? "selected" : "" %>>Author Z-A</option>
-                        <option value="popularity" <%= "popularity".equals(request.getParameter("sort")) ? "selected" : "" %>>Popularity</option>
-                        <option value="newest" <%= "newest".equals(request.getParameter("sort")) ? "selected" : "" %>>Newest First</option>
-                    </select>
-                </div>
-            </div>
-        </div>
+
 
         <!-- Books Grid -->
         <div class="books-grid" id="booksGrid">
@@ -761,7 +924,7 @@
                     try {
                         books = bookDAO.getAllBooks();
                     } catch (Exception e) {
-                        out.println("Error: " + e.getMessage().replaceAll("[<>\"&]", ""));
+                        System.out.println("Error: " + e.getMessage().replaceAll("[<>\"&]", ""));
                     }
                 }
                 if (books != null) {
@@ -784,10 +947,14 @@
                         <span class="status-badge <%= isAvailable ? "available" : "borrowed" %>">
                             <%= isAvailable ? "Available" : "Borrowed" %>
                         </span>
-                        <a href="#" class="borrow-btn <%= isAvailable ? "" : "disabled-btn" %>"
-                           data-id="<%= book.getBookId() %>">
-                            <%= isAvailable ? "Borrow" : "Unavailable" %>
-                        </a>
+                        <form method="post" action="${pageContext.request.contextPath}/borrow" style="display: inline;">
+                            <input type="hidden" name="bookId" value="<%= book.getBookId() %>">
+                            <input type="hidden" name="userId" value="<%= user.getUserId()%>">
+                            <button type="submit" class="borrow-btn <%= isAvailable ? "" : "disabled-btn" %>"
+                                    <%= isAvailable ? "" : "disabled" %>>
+                                Borrow
+                            </button>
+                        </form>
                     </div>
                 </div>
             </div>
@@ -1019,19 +1186,6 @@
         if (sortFilter) {
             sortFilter.addEventListener('change', searchBooks);
         }
-
-        // Handle borrow button clicks
-        const borrowButtons = document.querySelectorAll('.borrow-btn');
-        borrowButtons.forEach(btn => {
-            btn.addEventListener('click', function(e) {
-                e.preventDefault();
-                if (!this.classList.contains('disabled-btn')) {
-                    const bookId = this.getAttribute('data-id');
-                    const contextPath = '<%= request.getContextPath() %>';
-                    window.location.href = `${contextPath}/borrowBook?bookId=${bookId}`;
-                }
-            });
-        });
     });
 </script>
 </body>

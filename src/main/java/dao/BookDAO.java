@@ -33,6 +33,30 @@ public class BookDAO {
     private static final String SEARCH_ALL_FIELDS =
             "SELECT bookid, title, author, totalcopies, category FROM book WHERE title LIKE ? OR author LIKE ? OR category LIKE ?";
 
+    private static final String SELECT_BOOK_BY_ID =
+            "SELECT bookid, title, author, totalcopies, category FROM book WHERE bookid = ?";
+
+    private static final String UPDATE_BOOK =
+            "UPDATE book SET title=?, author=?, totalcopies=?, category=? WHERE bookid=?";
+
+    public boolean updateBook(Book book) throws SQLException {
+        try (Connection conn = DBConnection.getDbConnection();
+             PreparedStatement ps = conn.prepareStatement(UPDATE_BOOK)) {
+
+            ps.setString(1, book.getTitle());
+            ps.setString(2, book.getAuthor());
+            ps.setInt(3, book.getTotalCopies());
+            ps.setString(4, book.getCategory());
+            ps.setInt(5, book.getBookId());
+
+            int rowsAffected = ps.executeUpdate();
+            return rowsAffected > 0;
+
+        } catch (SQLException e) {
+            throw new SQLException("Error updating book: " + e.getMessage(), e);
+        }
+    }
+
     public void insertBook(Book book) throws SQLException {
         try (Connection conn = DBConnection.getDbConnection();
              PreparedStatement ps = conn.prepareStatement(INSERT_BOOK, PreparedStatement.RETURN_GENERATED_KEYS)) {
@@ -49,6 +73,29 @@ public class BookDAO {
             }
         } catch (SQLException e) {
             throw new SQLException("Error inserting book: " + e.getMessage(), e);
+        }
+    }
+
+    public Book getBookById(int bookId) throws SQLException {
+        try (Connection conn = DBConnection.getDbConnection();
+             PreparedStatement ps = conn.prepareStatement(SELECT_BOOK_BY_ID)) {
+
+            ps.setInt(1, bookId);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    Book book = new Book();
+                    book.setBookId(rs.getInt("bookid"));
+                    book.setTitle(rs.getString("title"));
+                    book.setAuthor(rs.getString("author"));
+                    book.setTotalCopies(rs.getInt("totalcopies"));
+                    book.setCategory(rs.getString("category"));
+                    return book;
+                }
+                return null; // Return null if no book found with the given ID
+            }
+        } catch (SQLException e) {
+            throw new SQLException("Error fetching book by ID: " + e.getMessage(), e);
         }
     }
 

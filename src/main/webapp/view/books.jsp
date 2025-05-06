@@ -198,9 +198,8 @@
             <th>Image</th>
             <th>Title</th>
             <th>Author</th>
-            <th>Category</th>
             <th>Total Copies</th>
-            <th>Date & Time Added</th>
+            <th>Category</th>
             <th>Actions</th>
         </tr>
         <%
@@ -213,7 +212,6 @@
             <td><img src="${pageContext.request.contextPath}/BookImageServlet?bookId=<%= book.getBookId() %>" alt="<%= book.getTitle() %>"></td>
             <td><%= book.getTitle() %></td>
             <td><%= book.getAuthor() %></td>
-            <td>Programming</td>
             <td><%= book.getTotalCopies() %></td>
             <td><%= book.getCategory() %></td>
             <td class="actions">
